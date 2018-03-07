@@ -17,9 +17,16 @@
             <input type="range"  min="1" max="100" value="50" class="verSlider" id="powerSlider">
             <p><span id="powerDisplay"></span></p>
         </div>
+        <div class="puckNumber">
+            <input type="text" id="leftLauncher" class="leftLauncher" onkeypress="return AllowNumbersOnly(event)">
+            <input type="text" id="rightLauncher" class="rightLauncher" onkeypress="return AllowNumbersOnly(event)">
+            <p><span id="leftDisplay"></span></p>
+            <p><span id="rightDisplay"></span></p>
+        </div>
         <div class="sendButton">
             <button type="button" class="block" id="sendButton">Fire Pucks</button>
         </div>
+
         <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
         <script src="js/common.js"></script>
         <script src="js/viewer.js"></script>
