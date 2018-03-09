@@ -51,7 +51,7 @@ sendButton.onclick = function () {
     var launches = [left, right];
     var launchJSON = JSON.stringify(launches);
     sendPucks();
-    console.log(launchJSON);
+    //console.log(launchJSON);
     //JSON code
     title.innerHTML = "PRESSED  Angle: " + angleSlider.value + " Power: " + powerSlider.value + " Left Pucks: " + leftPucks.value + " Right Pucks: " + rightPucks.value;
     //maybe reset displayed values
@@ -102,7 +102,9 @@ function sendPucks() {
 
 //place holder, will decrease the amount of pucks associated with the userID
 function decreasePucks() {
-    pucks -= (leftPucks + rightPucks);
+    pucks -= leftPucks.value;
+    pucks -= rightPucks.value;
+    puckDisplay.innerHTML = 'Pucks: ' + pucks;
 }
 
 //Launcher object to be used in JSON for game
