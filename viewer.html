@@ -8,13 +8,13 @@
         <link rel="stylesheet" href="css/viewer.css">
     </head>
     <body>
-        <h1 id="title">LEEEEEROYYYY JENKINSSSSSSSSSSSSSSS</h1>
+        <h1 id="title">Controller</h1>
         <div class="angleContainer">
             <input type="range" min="0" max="90" value="45" class="horSlider" id="angleSlider">
             <p><span id="angleDisplay"></span></p>
         </div>
         <div class="powerContainer">
-            <input type="range"  min="1" max="100" value="50" class="verSlider" id="powerSlider">
+            <input type="range" min="1" max="100" value="50" class="verSlider" id="powerSlider">
             <p><span id="powerDisplay"></span></p>
         </div>
         <div class="puckNumber">
@@ -22,11 +22,12 @@
             <input type="text" id="rightLauncher" class="rightLauncher" onkeypress="return AllowNumbersOnly(event)">
             <p><span id="leftDisplay"></span></p>
             <p><span id="rightDisplay"></span></p>
+            <p><span id="totalPucks"></span></p>
         </div>
         <div class="sendButton">
             <button type="button" class="block" id="sendButton">Fire Pucks</button>
         </div>
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
         <script src="js/common.js"></script>
         <script src="js/viewer.js"></script>
