@@ -22,14 +22,8 @@ puckDisplay.innerHTML = "Pucks: " + pucks;
 leftPucks.value = 0;
 rightPucks.value = 0;
 
+//get twitch auth values
 window.Twitch.ext.onAuthorized(function (auth) {
-    $.ajax({
-        url: 'https://triviaextensionbackend.azurewebsites.net/api/questionset/' + auth.channelId + '?code=V78YpkUDrEHsGXMWgJ/efP81Co7fXovII5W0GML4pJmjZWsE4rHaSg==',
-        type: 'GET',
-        headers: {
-            'x-extension-jwt': auth.token,
-        }
-    });
     console.log(auth.token);
     twitchAuth = auth;
 });
