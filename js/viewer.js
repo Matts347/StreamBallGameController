@@ -88,7 +88,7 @@ function sendPucks() {
     //    console.log("DEBUG addNewCards - failed to retrieve questions..."); // DEBUG
     //    });
     $.ajax({
-        url: 'https://triviaextensionbackend.azurewebsites.net/api/questionset/' + twitchAuth.channelId + '?code=V78YpkUDrEHsGXMWgJ/efP81Co7fXovII5W0GML4pJmjZWsE4rHaSg==',
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch',
         type: 'GET',
         headers: {
             'x-extension-jwt': twitchAuth.token,
