@@ -47,11 +47,11 @@ powerSlider.oninput = function () {
 //Function to launch when the Fire button is pressed
 sendButton.onclick = function () {
     var left = new Launcher('0', angleSlider.value, powerSlider.value, leftPucks.value);
-    var right = new Launcher('1', angleSlider.value, powerSlider.value, leftPucks.value);
+    var right = new Launcher('1', angleSlider.value, powerSlider.value, rightPucks.value);
     var launches = [left, right];
     var launchJSON = JSON.stringify(launches);
-    sendPucks();
-    //console.log(launchJSON);
+    sendPucks(launchJSON);
+    console.log("sending the following json string: " + launchJSON);
     //JSON code
     title.innerHTML = "PRESSED  Angle: " + angleSlider.value + " Power: " + powerSlider.value + " Left Pucks: " + leftPucks.value + " Right Pucks: " + rightPucks.value;
     //maybe reset displayed values
@@ -65,7 +65,7 @@ function AllowNumbersOnly(e) {
 }
 
 //function to send JSON data to game
-function sendPucks() {
+function sendPucks(json) {
     //var url = "www.ineedarealurl.com";//get from mike
     //var xhttp = new XMLHttpRequest();
     //xhttp.onreadystatechange = function () {
@@ -88,11 +88,13 @@ function sendPucks() {
     //    console.log("DEBUG addNewCards - failed to retrieve questions..."); // DEBUG
     //    });
     $.ajax({
-        url: 'https://triviaextensionbackend.azurewebsites.net/api/questionset/' + twitchAuth.channelId + '?code=V78YpkUDrEHsGXMWgJ/efP81Co7fXovII5W0GML4pJmjZWsE4rHaSg==',
-        type: 'GET',
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch',
+        contentType: 'application/json',
+        type: 'POST',
         headers: {
             'x-extension-jwt': twitchAuth.token,
-        }
+        },
+        data: json
     }).done(function (response) {
         decreasePucks();
     }).fail(function () {
@@ -108,9 +110,21 @@ function decreasePucks() {
 }
 
 //Launcher object to be used in JSON for game
-function Launcher(side, angle, power, pucks) {
-    this.side = side; //int value of 0 for left and 1 for right
-    this.angle = angle;
-    this.power = power;
-    this.pucks = pucks;
+var Launcher = function (side, angle, power, pucks) {
+    // generate unique Id
+    var idLength = 9;
+    var generatedId = "";
+    var charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  
+    for (var i = 0; i < idLength; i++) {
+        generatedId += charSet.charAt(Math.floor(Math.random() * charSet.length));
+    }
+
+    return {
+        "id": generatedId, // include this so the backend can identify two separate launches that have identical parameters
+        "side": side, //int value of 0 for left and 1 for right
+        "angle": angle,
+        "power": power,
+        "pucks": pucks
+    };
 }
