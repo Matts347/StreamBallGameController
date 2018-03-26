@@ -25,7 +25,7 @@ $("#rightAngle").roundSlider({
     value: 45,
     min: 0,
     max: 90,
-    tooltipFormat: "changeTooltipRight",
+    tooltipFormat: "changeTooltipRight"
 });
 
 $("#leftAngle").roundSlider({
@@ -47,12 +47,12 @@ function changeTooltipRight(e) {
 }
 
 //get twitch auth values
-//window.Twitch.ext.onAuthorized(function (auth) {
-//    //console.log(auth.token);//debug
-//    twitchAuth = auth;
-//    window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
-//    window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
-//});
+window.Twitch.ext.onAuthorized(function (auth) {
+    //console.log(auth.token);//debug
+    twitchAuth = auth;
+    //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
+    //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
+});
 
 //Display for Power Slider
 leftPowerSlider.oninput = function () {
@@ -102,8 +102,9 @@ function sendPucks(json) {
         },
         data: json
     }).done(function (response) {
-        window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
-        window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
+        //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
+        //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
+        decreasePucks();
     }).fail(function () {
         console.log("sendPucks failed");
     });
@@ -117,11 +118,11 @@ function sendPucks(json) {
 //});
 
 ////place holder, will decrease the amount of pucks associated with the userID
-//function decreasePucks() {
-//    pucks -= leftPucks.value;
-//    pucks -= rightPucks.value;
-//    puckDisplay.innerHTML = 'Pucks: ' + pucks;
-//}
+function decreasePucks() {
+    pucks -= leftPucks.value;
+    pucks -= rightPucks.value;
+    puckDisplay.innerHTML = 'Pucks: ' + pucks;
+}
 
 //Launcher object to be used in JSON for game
 var Launcher = function (side, angle, power, pucks) {
