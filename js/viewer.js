@@ -50,7 +50,7 @@ function changeTooltipRight(e) {
 window.Twitch.ext.onAuthorized(function (auth) {
     //console.log(auth.token);//debug
     twitchAuth = auth;
-    window.Twitch.ext.listen("whisper-" + twitchAuth.opaque_user_id, getUpdatedPuckCount);
+    window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
     //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
 });
 
@@ -144,8 +144,7 @@ var Launcher = function (side, angle, power, pucks) {
 
     return {
         "id": generatedId, // include this so the backend can identify two separate launches that have identical parameters
-        "userId": twitchAuth.user_id,
-        "opaqueUserId": twitchAuth.opaque_user_id,
+        "opaqueUserId": twitchAuth.userId,
         "side": side, //int value of 0 for left and 1 for right
         "angle": angle,
         "power": power,
