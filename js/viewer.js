@@ -50,8 +50,8 @@ function changeTooltipRight(e) {
 window.Twitch.ext.onAuthorized(function (auth) {
     //console.log(auth.token);//debug
     twitchAuth = auth;
-    //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
-    //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
+    window.Twitch.ext.listen("whisper-" + twitchAuth.opaque_user_id, getUpdatedPuckCount);
+    //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
 });
 
 //Display for Power Slider
@@ -64,14 +64,21 @@ rightPowerSlider.oninput = function () {
 
 //Function to launch when the Fire button is pressed
 sendButton.onclick = function () {
-    //leftPowerSlider.value and pucks.value are returning strings, not int. Check with mike to see if that matters.
-    var left = new Launcher('0', Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
-    var right = new Launcher('1', rightAngle.option("value"), leftPowerSlider.value, rightPucks.value);
-
-    var launches = [left, right];
-    var launchJSON = JSON.stringify(launches);
-    sendPucks(launchJSON);
-    console.log("sending the following json string: " + launchJSON); //DEBUG
+    //set all values to numbers
+    var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
+    var right = new Launcher(1, rightAngle.option("value"), leftPowerSlider.value, rightPucks.value);
+    var launches = [];
+    if (left.pucks > 0) {
+        launches.push(left);
+    } 
+    if (right.pucks > 0) {
+        launches.push(right);
+    }
+    if (launches.length > 0) {
+        var launchJSON = JSON.stringify(launches);
+        sendPucks(launchJSON);
+        console.log("sending the following json string: " + launchJSON); //DEBUG
+    }
     //title.innerHTML = "PRESSED  Angle: " + Math.abs(leftAngle.value) + " " + rightAngle.Value + " Power: " + leftPowerSlider.value + " Left Pucks: " + leftPucks.value + " Right Pucks: " + rightPucks.value; //DEBUG
     //maybe reset displayed values
 };
@@ -83,7 +90,7 @@ function AllowNumbersOnly(e) {
     }
 }
 
-function getUpdatedPuckCount(target, type, msg) {
+function getUpdatedPuckCount(target, type, msg) {  
     if (type === "application/json") {
         var msgJSON = JSON.parse(msg);
         puckCount = msgJSON.pucks;
@@ -137,6 +144,8 @@ var Launcher = function (side, angle, power, pucks) {
 
     return {
         "id": generatedId, // include this so the backend can identify two separate launches that have identical parameters
+        "userId": twitchAuth.user_id,
+        "opaqueUserId": twitchAuth.opaque_user_id,
         "side": side, //int value of 0 for left and 1 for right
         "angle": angle,
         "power": power,
