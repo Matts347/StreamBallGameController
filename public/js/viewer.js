@@ -93,7 +93,7 @@ function AllowNumbersOnly(e) {
 function getUpdatedPuckCount(target, type, msg) {  
     if (type === "application/json") {
         var msgJSON = JSON.parse(msg);
-        puckCount = msgJSON.pucks;
+        puckCount = msgJSON.puckCount;
         puckDisplay.innerHTML = "Pucks: " + puckCount;
     }
 }
