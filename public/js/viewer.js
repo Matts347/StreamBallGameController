@@ -84,8 +84,8 @@ sendButton.onclick = function () {
 };
 
 function AllowNumbersOnly(e) {
-    if (isNaN(e))
-    {
+    var charCode = e.which ? e.which : e.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
         e.preventDefault();
     }
 }
@@ -101,7 +101,7 @@ function getUpdatedPuckCount(target, type, msg) {
 //function to send JSON data to game
 function sendPucks(json) {
     $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch',
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId=' + twitchAuth.channelId,
         contentType: 'application/json',
         type: 'POST',
         headers: {
@@ -143,7 +143,7 @@ var Launcher = function (side, angle, power, pucks) {
     }
 
     return {
-        "id": generatedId, // include this so the backend can identify two separate launches that have identical parameters
+        "id": twitchAuth.userId + '_' + generatedId, // include this so the backend can identify two separate launches that have identical parameters
         "opaqueUserId": twitchAuth.userId,
         "side": side, //int value of 0 for left and 1 for right
         "angle": angle,
