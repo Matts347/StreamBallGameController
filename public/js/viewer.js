@@ -62,26 +62,26 @@ rightPowerSlider.oninput = function () {
     rightPowerOutput.innerHTML = "Power: " + this.value;
 };
 
-//Function to launch when the Fire button is pressed
-sendButton.onclick = function () {
-    //set all values to numbers
-    var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
-    var right = new Launcher(1, rightAngle.option("value"), leftPowerSlider.value, rightPucks.value);
-    var launches = [];
-    if (left.pucks > 0) {
-        launches.push(left);
-    } 
-    if (right.pucks > 0) {
-        launches.push(right);
-    }
-    if (launches.length > 0) {
-        var launchJSON = JSON.stringify(launches);
-        sendPucks(launchJSON);
-        console.log("sending the following json string: " + launchJSON); //DEBUG
-    }
-    //title.innerHTML = "PRESSED  Angle: " + Math.abs(leftAngle.value) + " " + rightAngle.Value + " Power: " + leftPowerSlider.value + " Left Pucks: " + leftPucks.value + " Right Pucks: " + rightPucks.value; //DEBUG
-    //maybe reset displayed values
-};
+// //Function to launch when the Fire button is pressed
+// sendButton.onclick = function () {
+//     //set all values to numbers
+//     var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
+//     var right = new Launcher(1, rightAngle.option("value"), leftPowerSlider.value, rightPucks.value);
+//     var launches = [];
+//     if (left.pucks > 0) {
+//         launches.push(left);
+//     } 
+//     if (right.pucks > 0) {
+//         launches.push(right);
+//     }
+//     if (launches.length > 0) {
+//         var launchJSON = JSON.stringify(launches);
+//         sendPucks(launchJSON);
+//         console.log("sending the following json string: " + launchJSON); //DEBUG
+//     }
+//     //title.innerHTML = "PRESSED  Angle: " + Math.abs(leftAngle.value) + " " + rightAngle.Value + " Power: " + leftPowerSlider.value + " Left Pucks: " + leftPucks.value + " Right Pucks: " + rightPucks.value; //DEBUG
+//     //maybe reset displayed values
+// };
 
 function AllowNumbersOnly(e) {
     var charCode = e.which ? e.which : e.keyCode;
@@ -101,7 +101,7 @@ function getUpdatedPuckCount(target, type, msg) {
 //function to send JSON data to game
 function sendPucks(json) {
     $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId=' + twitchAuth.channelId,
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId= ' + twitchAuth.channelId,
         contentType: 'application/json',
         type: 'POST',
         headers: {
@@ -153,4 +153,26 @@ var Launcher = function (side, angle, power, pucks) {
     };
 };
 
+$(document).ready(function() {
+    $("#sendButton").unbind('click');
+    $("#sendButton").bind('click', function() {
+        //set all values to numbers
+        var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
+        var right = new Launcher(1, rightAngle.option("value"), leftPowerSlider.value, rightPucks.value);
+        var launches = [];
+        if (left.pucks > 0) {
+            launches.push(left);
+        } 
+        if (right.pucks > 0) {
+            launches.push(right);
+        }
+        if (launches.length > 0) {
+            var launchJSON = JSON.stringify(launches);
+            sendPucks(launchJSON);
+            console.log("sending the following json string: " + launchJSON); //DEBUG
+        }
+        //title.innerHTML = "PRESSED  Angle: " + Math.abs(leftAngle.value) + " " + rightAngle.Value + " Power: " + leftPowerSlider.value + " Left Pucks: " + leftPucks.value + " Right Pucks: " + rightPucks.value; //DEBUG
+        //maybe reset displayed values
+    });
+});
 
