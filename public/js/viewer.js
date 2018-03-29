@@ -158,7 +158,7 @@ $(document).ready(function() {
     $("#sendButton").bind('click', function() {
         //set all values to numbers
         var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
-        var right = new Launcher(1, rightAngle.option("value"), leftPowerSlider.value, rightPucks.value);
+        var right = new Launcher(1, rightAngle.option("value"), rightPowerSlider.value, rightPucks.value);
         var launches = [];
         if (left.pucks > 0) {
             launches.push(left);
