@@ -46,11 +46,28 @@ function changeTooltipRight(e) {
     return Math.abs(val) + '\xB0';
 }
 
+function sendUserInfo() {
+    $.ajax({
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId= ' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
+        contentType: 'application/json',
+        type: 'POST',
+        headers: {
+            'x-extension-jwt': twitchAuth.token
+        },
+        data: {}
+    }).done(function (response) {
+        console.log(" -- SENT user info to backend -- "); // DEBUG
+    }).fail(function () {
+        console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
+    });
+}
+
 //get twitch auth values
 window.Twitch.ext.onAuthorized(function (auth) {
     //console.log(auth.token);//debug
     twitchAuth = auth;
     window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
+    sendUserInfo();
     //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
 });
 
@@ -101,7 +118,7 @@ function getUpdatedPuckCount(target, type, msg) {
 //function to send JSON data to game
 function sendPucks(json) {
     $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId= ' + twitchAuth.channelId,
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId= ' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
         contentType: 'application/json',
         type: 'POST',
         headers: {
@@ -143,7 +160,7 @@ var Launcher = function (side, angle, power, pucks) {
     }
 
     return {
-        "id": twitchAuth.userId + '_' + generatedId, // include this so the backend can identify two separate launches that have identical parameters
+        "id": generatedId, // include this so the backend can identify two separate launches that have identical parameters
         "opaqueUserId": twitchAuth.userId,
         "side": side, //int value of 0 for left and 1 for right
         "angle": angle,
