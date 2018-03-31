@@ -14,7 +14,7 @@ var twitchAuth;
 //init variables
 leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
 rightPowerOutput.innerHTML = "Power: " + rightPowerSlider.value;
-puckDisplay.innerHTML = "Total Pucks: " + puckCount;
+puckDisplay.innerHTML = "Pucks: " + puckCount;
 leftPucks.value = 0;
 rightPucks.value = 0;
 
@@ -128,7 +128,7 @@ function sendPucks(json) {
     }).done(function (response) {
         //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
         //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
-        decreasePucks();
+        //decreasePucks();
     }).fail(function () {
         console.log("sendPucks failed");
     });
@@ -176,7 +176,7 @@ $(document).ready(function() {
         //set all values to numbers
         var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
         var right = new Launcher(1, rightAngle.option("value"), rightPowerSlider.value, rightPucks.value);
-        var launches = [];
+        var launches = new Array();
         if (left.pucks > 0) {
             launches.push(left);
         } 
