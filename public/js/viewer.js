@@ -10,7 +10,7 @@ var rightPucks = document.getElementById("rightLauncher");
 var puckDisplay = document.getElementById("totalPucks");
 var puckCount = 0; //this will be pulled from the player ID to know how many they actually have
 var twitchAuth;
-var logoURL;
+var userInfo;
 //init variables
 leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
 rightPowerOutput.innerHTML = "Power: " + rightPowerSlider.value;
@@ -27,7 +27,6 @@ $("#rightAngle").roundSlider({
     max: 90,
     tooltipFormat: "changeTooltipRight"
 });
-
 $("#leftAngle").roundSlider({
     radius: 80,
     circleShape: "quarter-top-right",
@@ -37,10 +36,10 @@ $("#leftAngle").roundSlider({
     max: 0,
     tooltipFormat: "changeTooltipRight"
 });
-
 var leftAngle = $("#leftAngle").data("roundSlider");
 var rightAngle = $("#rightAngle").data("roundSlider");
 
+//Right angles slider normally displays a negative value. This allows the correct value to be displayed
 function changeTooltipRight(e) {
     var val = e.value;
     return Math.abs(val) + '\xB0';
@@ -62,52 +61,22 @@ function sendUserInfo() {
     });
 }
 
-function getUserAvatarURL() {
+function getUserAvatarURL(trueUserId) {
     $.ajax({
-        url: 'https://api.twitch.tv/kraken/users/' + twitchAuth.userId, //get user autherization to aquire userID, not opaqueUserID
+        url: 'https://api.twitch.tv/kraken/users/' + trueUserId, //get user autherization to aquire userID, not opaqueUserID
         type: 'GET',
         dataType: 'json',
         headers: {
             'Accept': 'application/vnd.twitchtv.v5+json',
             'Client-ID': 'pxa5la9qqsrqerq15fre01o89fmff0',
-        }/*,*/
-        //success: function (response) {
-        //    console.log(response);
-        //    logoURL = response.logo;
-        //}
+        }
     }).done(function (response) {
-        logoURL = response.logo;
-        console.log("User Logo obtained: " + logoURL);
+        userInfo = response;
         }).fail(function () {
             console.log("getUserAvatarURL failed");
     });
-    //var settings = {
-    //    "async": true,
-    //    "crossDomain": true,
-    //    "url": "https://api.twitch.tv/kraken/users/74504819",
-    //    "method": "GET",
-    //    "headers": {
-    //        "Accept": "application/vnd.twitchtv.v5+json",
-    //        "Client-ID": "pxa5la9qqsrqerq15fre01o89fmff0",
-    //        //"Cache-Control": "no-cache",
-    //        //"Postman-Token": "074bc3cd-e003-42f3-9700-b6e05261ac84"
-    //    }
-    //}
-
-    //$.ajax(settings).done(function (response) {
-    //    console.log(response);
-    //}).done(function (response) { }).fail(function () {console.log("FAILED") });
 }
 
-//get twitch auth values
-window.Twitch.ext.onAuthorized(function (auth) {
-    //console.log(auth.token);//debug
-    twitchAuth = auth;
-    window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
-    sendUserInfo();
-    getUserAvatarURL();
-    //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
-});
 
 //Display for Power Slider
 leftPowerSlider.oninput = function () {
@@ -146,28 +115,13 @@ function sendPucks(json) {
     }).done(function (response) {
         //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
         //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
-        //decreasePucks();
     }).fail(function () {
         console.log("sendPucks failed");
     });
 }
 
-//window.Twitch.ext.listen("whisper-" + twitchAuth.userId, function (target, type, msg) {
-//    if (type === "application/json") {
-//        var msgJSON = JSON.parse(msg);
-//    }
-//    //pucks = puckCount;
-//});
-
-////place holder, will decrease the amount of pucks associated with the userID
-function decreasePucks() {
-    pucks -= leftPucks.value;
-    pucks -= rightPucks.value;
-    puckDisplay.innerHTML = 'Pucks: ' + pucks;
-}
-
 //Launcher object to be used in JSON for game
-var Launcher = function (side, angle, power, pucks, avatarURL) {
+var Launcher = function (side, angle, power, pucks) {
     // generate unique Id
     var idLength = 9;
     var generatedId = "";
@@ -178,9 +132,10 @@ var Launcher = function (side, angle, power, pucks, avatarURL) {
     }
 
     return {
-        "avatarUrl": avatarURL,
+        "avatarUrl": userInfo.logo,
         "id": generatedId, // include this so the backend can identify two separate launches that have identical parameters
         "opaqueUserId": twitchAuth.userId,
+        "userId": userInfo._id,
         "side": side, //int value of 0 for left and 1 for right
         "angle": angle,
         "power": power,
@@ -189,12 +144,12 @@ var Launcher = function (side, angle, power, pucks, avatarURL) {
     };
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     $("#sendButton").unbind('click');
     $("#sendButton").bind('click', function() {
         //set all values to numbers
-        var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value, logoURL);
-        var right = new Launcher(1, rightAngle.option("value"), rightPowerSlider.value, rightPucks.value, logoURL);
+        var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
+        var right = new Launcher(1, rightAngle.option("value"), rightPowerSlider.value, rightPucks.value);
         var launches = new Array();
         if (left.pucks > 0) {
             launches.push(left);
@@ -207,8 +162,28 @@ $(document).ready(function() {
             sendPucks(launchJSON);
             console.log("sending the following json string: " + launchJSON); //DEBUG
         }
-        //title.innerHTML = "PRESSED  Angle: " + Math.abs(leftAngle.value) + " " + rightAngle.Value + " Power: " + leftPowerSlider.value + " Left Pucks: " + leftPucks.value + " Right Pucks: " + rightPucks.value; //DEBUG
-        //maybe reset displayed values
     });
 });
+
+//get twitch auth values
+window.Twitch.ext.onAuthorized(function (auth) {
+    console.log(auth);//debug
+    twitchAuth = auth;
+    window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
+    sendUserInfo();
+
+    //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
+    var parts = auth.token.split(".");
+    var payload = JSON.parse(window.atob(parts[1]));
+    console.log(payload);
+    if (payload.user_id) {
+        // user has granted
+        getUserAvatarURL(payload.user_id);
+    }
+    else {
+        window.Twitch.ext.actions.requestIdShare();
+        getUserAvatarURL();
+    }
+});
+
 
