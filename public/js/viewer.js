@@ -140,7 +140,8 @@ var Launcher = function (side, angle, power, pucks) {
         "angle": angle,
         "power": power,
         "pucks": pucks,
-        "timestamp": Date.now()
+        "timestamp": Date.now(),
+        "displayName": userInfo.display_name
     };
 };
 
