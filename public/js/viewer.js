@@ -209,6 +209,7 @@ window.Twitch.ext.onAuthorized(function (auth) {
     else {
         window.Twitch.ext.actions.requestIdShare();
     }
+    console.log("listening on the following channel: whisper-" + twitchAuth.userId);
     window.Twitch.ext.listen("whisper-" + twitchAuth.userId, function (target, type, msg) {
         console.log(target);
         console.log(type);
@@ -219,6 +220,9 @@ window.Twitch.ext.onAuthorized(function (auth) {
             puckDisplay.innerHTML = "Pucks: " + puckCount;
         }
     });
+    // window.Twitch.ext.listen("broadcast", function (target, type, msg) {
+    //     console.log("----- broadcast worked -----");
+    // });
     //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
 });
 
