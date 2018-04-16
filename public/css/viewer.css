@@ -1,14 +1,8 @@
 
 body {
     font: 12px arial, sans-serif;
+    background-image: url("scratched_steel_texture_by_aarondesign.jpg");
 }
-/*input[type=range][orient=vertical]
-{
-    -webkit-appearance: slider-vertical;
-    width: 25px;
-    height: 500px;
-
-}*/
 .slidercontainer{
     width: 100%;
 }
@@ -34,9 +28,6 @@ body {
     display: flex;
     justify-content: space-between;
 }
-/*#rightPowerDisplay{
-    align-self: center
-}*/
 .block {
     display: block;
     width: 100%;
@@ -64,11 +55,7 @@ body {
     width: 50%;
     margin-top: 10px;
 }
-/*#rightDisplay{
-    float: ;
-}*/
+
 h1 {
     text-align: center;
 }
-
-/*knob stuff*/

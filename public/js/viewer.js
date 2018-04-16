@@ -45,23 +45,23 @@ function changeTooltipRight(e) {
     return Math.abs(val) + '\xB0';
 }
 
-function sendUserInfo() {
-    $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId= ' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
-        contentType: 'application/json',
-        type: 'POST',
-        headers: {
-            'x-extension-jwt': twitchAuth.token
-        },
-        data: {}
-    }).done(function (response) {
-        console.log(" -- SENT user info to backend -- "); // DEBUG
-    }).fail(function () {
-        console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
-    });
-}
+//function sendUserInfo() {
+//    $.ajax({
+//        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId= ' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
+//        contentType: 'application/json',
+//        type: 'POST',
+//        headers: {
+//            'x-extension-jwt': twitchAuth.token
+//        },
+//        data: {}
+//    }).done(function (response) {
+//        console.log(" -- SENT user info to backend -- "); // DEBUG
+//    }).fail(function () {
+//        console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
+//    });
+//}
 
-function getUserAvatarURL(trueUserId) {
+function getUserInfo(trueUserId) {
     $.ajax({
         url: 'https://api.twitch.tv/kraken/users/' + trueUserId, //get user autherization to aquire userID, not opaqueUserID
         type: 'GET',
@@ -72,8 +72,11 @@ function getUserAvatarURL(trueUserId) {
         }
     }).done(function (response) {
         userInfo = response;
+        document.getElementById("userName").textContent = userInfo.display_name;
+        document.getElementById("playerScore").textContent = 0;
+        console.log(userInfo); //debug
         }).fail(function () {
-            console.log("getUserAvatarURL failed");
+            console.log("getUserInfo failed");
     });
 }
 
@@ -94,13 +97,13 @@ function AllowNumbersOnly(e) {
     }
 }
 
-function getUpdatedPuckCount(target, type, msg) {  
-    if (type === "application/json") {
-        var msgJSON = JSON.parse(msg);
-        puckCount = msgJSON.puckCount;
-        puckDisplay.innerHTML = "Pucks: " + puckCount;
-    }
-}
+//function getUpdatedPuckCount(target, type, msg) {  
+//    if (type === "application/json") {
+//        var msgJSON = JSON.parse(msg);
+//        puckCount = msgJSON.puckCount;
+//        puckDisplay.innerHTML = "Pucks: " + puckCount;
+//    }
+//}
 
 //function to send JSON data to game
 function sendPucks(json) {
@@ -113,11 +116,35 @@ function sendPucks(json) {
         },
         data: json
     }).done(function (response) {
-        //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
+        //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
         //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
     }).fail(function () {
         console.log("sendPucks failed");
     });
+}
+
+//disable launch button after click for a few seconds
+function disableButton() {
+    var disabledSeconds = 5;
+    sendButton.disabled = true;
+    if (sendButton.disabled === true) {
+        console.log('Button Disabled');
+        //sendButton.textContent = 'Launching in ' + disabledSeconds;
+        var disabledTimer = setInterval(function () {
+            sendButton.textContent = 'Launching in ' + disabledSeconds;
+            disabledSeconds--;
+            if (disabledSeconds <= 0) {
+                clearInterval(disabledTimer);
+            }
+        }, 1000);
+    };
+    setTimeout(function () {
+        sendButton.disabled = false;
+        if (sendButton.disabled === false) {
+            sendButton.textContent = 'Fire Button';
+        }
+    }, 6000);
+    //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
 }
 
 //Launcher object to be used in JSON for game
@@ -163,28 +190,36 @@ $(document).ready(function () {
             sendPucks(launchJSON);
             console.log("sending the following json string: " + launchJSON); //DEBUG
         }
+        disableButton();
     });
 });
 
 //get twitch auth values
 window.Twitch.ext.onAuthorized(function (auth) {
-    console.log(auth);//debug
+    //console.log(auth);//debug
     twitchAuth = auth;
-    window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
-    sendUserInfo();
-
-    //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
+    //sendUserInfo();
     var parts = auth.token.split(".");
     var payload = JSON.parse(window.atob(parts[1]));
-    console.log(payload);
+    console.log(payload); //debug
     if (payload.user_id) {
         // user has granted
-        getUserAvatarURL(payload.user_id);
+        getUserInfo(payload.user_id);
     }
     else {
         window.Twitch.ext.actions.requestIdShare();
-        getUserAvatarURL();
     }
+    window.Twitch.ext.listen("whisper-" + twitchAuth.userId, function (target, type, msg) {
+        console.log(target);
+        console.log(type);
+        console.log(msg);
+        if (type === "application/json") {
+            var msgJSON = JSON.parse(msg);
+            puckCount = msgJSON.puckCount;
+            puckDisplay.innerHTML = "Pucks: " + puckCount;
+        }
+    });
+    //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
 });
 
 
