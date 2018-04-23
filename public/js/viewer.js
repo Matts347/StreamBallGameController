@@ -7,8 +7,6 @@ var sendButton = document.getElementById("sendButton");
 var title = document.getElementById("title");
 var leftPucks = document.getElementById("leftLauncher");
 var rightPucks = document.getElementById("rightLauncher");
-var puckDisplay = document.getElementById("totalPucks");
-var puckCount = 0; //this will be pulled from the player ID to know how many they actually have
 var twitchAuth;
 var userInfo;
 var newUser = true;
@@ -16,7 +14,6 @@ var payload;
 //init variables
 leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
 rightPowerOutput.innerHTML = "Power: " + rightPowerSlider.value;
-puckDisplay.innerHTML = "Pucks: " + puckCount;
 leftPucks.value = 0;
 rightPucks.value = 0;
 
@@ -229,13 +226,19 @@ window.Twitch.ext.onAuthorized(function (auth) {
     }
     console.log("listening on the following channel: whisper-" + twitchAuth.userId); //DEBUG
     window.Twitch.ext.listen("whisper-" + twitchAuth.userId, function (target, type, msg) {
-        console.log(target);
-        console.log(type);
-        console.log(msg);
+        //console.log(target);
+        //console.log(type);
+        //console.log(msg);
         if (type === "application/json") {
             var msgJSON = JSON.parse(msg);
-            puckCount = msgJSON.puckCount;
-            puckDisplay.innerHTML = "Pucks: " + puckCount;
+            if (msgJSON.puckCount !== undefined) {
+                var puckCount = msgJSON.puckCount;
+                document.getElementById("totalPucks").innerHTML = "Pucks: " + puckCount;
+            }
+            else if (msgJSON.points !== undefined) {
+                var points = msgJSON.points;
+                document.getElementById("playerScore").innerHTML = "Score: " + points;
+            }
         }
     });
     // window.Twitch.ext.listen("broadcast", function (target, type, msg) {
