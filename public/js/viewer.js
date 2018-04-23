@@ -11,6 +11,8 @@ var puckDisplay = document.getElementById("totalPucks");
 var puckCount = 0; //this will be pulled from the player ID to know how many they actually have
 var twitchAuth;
 var userInfo;
+var newUser = true;
+var payload;
 //init variables
 leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
 rightPowerOutput.innerHTML = "Power: " + rightPowerSlider.value;
@@ -45,21 +47,21 @@ function changeTooltipRight(e) {
     return Math.abs(val) + '\xB0';
 }
 
-//function sendUserInfo() {
-//    $.ajax({
-//        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId= ' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
-//        contentType: 'application/json',
-//        type: 'POST',
-//        headers: {
-//            'x-extension-jwt': twitchAuth.token
-//        },
-//        data: {}
-//    }).done(function (response) {
-//        console.log(" -- SENT user info to backend -- "); // DEBUG
-//    }).fail(function () {
-//        console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
-//    });
-//}
+function sendUserInfo() {
+    $.ajax({
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId= ' + twitchAuth.channelId + '&playerId=' + payload.user_id + '&opaqueUserId=' + payload.opaque_user_id,
+        contentType: 'application/json',
+        type: 'POST',
+        headers: {
+            'x-extension-jwt': twitchAuth.token
+        },
+        data: {}
+    }).done(function (response) {
+        console.log(" -- SENT user info to backend -- "); // DEBUG
+    }).fail(function () {
+        console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
+    });
+}
 
 function getUserInfo(trueUserId) {
     $.ajax({
@@ -193,15 +195,31 @@ $(document).ready(function () {
         disableButton();
     });
 });
+//window.Twitch.ext.onContext(function (context, contextFields) {
+//    if (newUser === true && context.mode === "viewer") {
+//        sendUserInfo();
+//        newUser = false;
+//    }
+//    console.log(context); //DEBUG
+//    console.log(contextFields); //DEBUG
+//    console.log(newUser); //DEBUG
+//});
 
 //get twitch auth values
 window.Twitch.ext.onAuthorized(function (auth) {
-    //console.log(auth);//debug
+    console.log("auth");
+    console.log(auth);//debug
     twitchAuth = auth;
-    //sendUserInfo();
     var parts = auth.token.split(".");
-    var payload = JSON.parse(window.atob(parts[1]));
+    payload = JSON.parse(window.atob(parts[1]));
     console.log(payload); //debug
+    //sends userinfo if it's a new user
+    console.log(newUser)
+    if (newUser === true) {
+        sendUserInfo();
+        newUser = false;
+    }
+
     if (payload.user_id) {
         // user has granted
         getUserInfo(payload.user_id);
@@ -209,7 +227,7 @@ window.Twitch.ext.onAuthorized(function (auth) {
     else {
         window.Twitch.ext.actions.requestIdShare();
     }
-    console.log("listening on the following channel: whisper-" + twitchAuth.userId);
+    console.log("listening on the following channel: whisper-" + twitchAuth.userId); //DEBUG
     window.Twitch.ext.listen("whisper-" + twitchAuth.userId, function (target, type, msg) {
         console.log(target);
         console.log(type);
