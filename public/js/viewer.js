@@ -58,8 +58,12 @@ function sendUserInfo() {
         data: {}
     }).done(function (response) {
         console.log(" -- SENT user info to backend -- "); // DEBUG
-    }).fail(function () {
+        console.log(response);
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
     });
 }
 
@@ -110,7 +114,7 @@ function AllowNumbersOnly(e) {
 //function to send JSON data to game
 function sendPucks(json) {
     $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId= ' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId=' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
         contentType: 'application/json',
         type: 'POST',
         headers: {
