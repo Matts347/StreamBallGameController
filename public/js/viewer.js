@@ -49,7 +49,7 @@ function changeTooltipRight(e) {
 
 function sendUserInfo() {
     $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId= ' + twitchAuth.channelId + '&playerId=' + payload.user_id + '&opaqueUserId=' + payload.opaque_user_id,
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId=' + twitchAuth.channelId + '&playerId=' + payload.user_id + '&opaqueUserId=' + payload.opaque_user_id,
         contentType: 'application/json',
         type: 'POST',
         headers: {
