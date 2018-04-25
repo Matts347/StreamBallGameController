@@ -77,7 +77,7 @@ function changeTooltipRight(e) {
 
 function sendUserInfo() {
     $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId= ' + twitchAuth.channelId + '&playerId=' + payload.user_id + '&opaqueUserId=' + payload.opaque_user_id,
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId=' + twitchAuth.channelId + '&playerId=' + payload.user_id + '&opaqueUserId=' + payload.opaque_user_id,
         contentType: 'application/json',
         type: 'POST',
         headers: {
@@ -86,8 +86,12 @@ function sendUserInfo() {
         data: {}
     }).done(function (response) {
         console.log(" -- SENT user info to backend -- "); // DEBUG
-    }).fail(function () {
+        console.log(response);
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
     });
 }
 
@@ -123,7 +127,7 @@ function getUserInfo(trueUserId) {
 //function to send JSON data to game
 function sendPucks(json) {
     $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId= ' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId=' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
         contentType: 'application/json',
         type: 'POST',
         headers: {
