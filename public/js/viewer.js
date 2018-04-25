@@ -5,8 +5,6 @@ var leftPowerOutput = document.getElementById("leftPowerDisplay");
 var rightPowerOutput = document.getElementById("rightPowerDisplay");
 var sendButton = document.getElementById("sendButton");
 var title = document.getElementById("title");
-var leftPucks = document.getElementById("leftLauncher");
-var rightPucks = document.getElementById("rightLauncher");
 var twitchAuth;
 var userInfo;
 var newUser = true;
@@ -14,8 +12,41 @@ var payload;
 //init variables
 leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
 rightPowerOutput.innerHTML = "Power: " + rightPowerSlider.value;
-leftPucks.value = 0;
-rightPucks.value = 0;
+
+//Display for Power Slider
+leftPowerSlider.oninput = function () {
+    leftPowerOutput.innerHTML = "Power: " + this.value;
+};
+rightPowerSlider.oninput = function () {
+    rightPowerOutput.innerHTML = "Power: " + this.value;
+};
+
+
+function AllowNumbersOnly(e) {
+    var charCode = e.which ? e.which : e.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        e.preventDefault();
+    }
+    if (e.value < 0) {
+        e.value = 0;
+        //e.currentTarget.innerHTML = 0;
+    }
+    if (e.value > 50) {
+        e.value = 50;
+        //e.currentTarget.innerHTML = 50;
+    }
+}
+
+//function maxPucks(e) {
+//    if (e.value < 0) {
+//        e.value = 0;
+//        //e.currentTarget.innerHTML = 0;
+//    }
+//    if (e.value > 50) {
+//        e.value = 50;
+//        //e.currentTarget.innerHTML = 50;
+//    }
+//}
 
 $("#rightAngle").roundSlider({
     radius: 80,
@@ -80,21 +111,6 @@ function getUserInfo(trueUserId) {
 }
 
 
-//Display for Power Slider
-leftPowerSlider.oninput = function () {
-    leftPowerOutput.innerHTML = "Power: " + this.value;
-};
-rightPowerSlider.oninput = function () {
-    rightPowerOutput.innerHTML = "Power: " + this.value;
-};
-
-
-function AllowNumbersOnly(e) {
-    var charCode = e.which ? e.which : e.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-        e.preventDefault();
-    }
-}
 
 //function getUpdatedPuckCount(target, type, msg) {  
 //    if (type === "application/json") {
@@ -175,8 +191,8 @@ $(document).ready(function () {
     $("#sendButton").unbind('click');
     $("#sendButton").bind('click', function() {
         //set all values to numbers
-        var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
-        var right = new Launcher(1, rightAngle.option("value"), rightPowerSlider.value, rightPucks.value);
+        var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, document.getElementById("leftLauncher").value);
+        var right = new Launcher(1, rightAngle.option("value"), rightPowerSlider.value, document.getElementById("leftLauncher").value);
         var launches = new Array();
         if (left.pucks > 0) {
             launches.push(left);

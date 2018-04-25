@@ -27,8 +27,8 @@
         <input id="rightAngle" />
     </div>
     <div class="puckNumber">
-        <input type="text" id="leftLauncher" class="leftLauncher" onkeypress="return AllowNumbersOnly(event)">
-        <input type="text" id="rightLauncher" class="rightLauncher" onkeypress="return AllowNumbersOnly(event)">
+        <input type="text" min="1" max="50" id="leftLauncher" class="leftLauncher" placeholder="Max: 50" onkeypress="return AllowNumbersOnly(event)"/>
+        <input type="text" min="1" max="50" id="rightLauncher" class="rightLauncher" placeholder="Max: 50" onkeypress="return AllowNumbersOnly(event)"/>
     </div>
     <div class="sendButton">
         <button type="button" class="block" id="sendButton">Fire Pucks</button>
