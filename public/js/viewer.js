@@ -19,7 +19,7 @@ function sendUserInfo() {
     }).done(function (response) {
         console.log(" -- SENT user info to backend -- "); // DEBUG
         console.log(response);
-        LoadHeaderTemplate(undefined, response.puckCount, response.points);
+        LoadHeaderTemplate(undefined, undefined, response.puckCount, response.points);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
         console.log(jqXHR);
@@ -38,7 +38,7 @@ function getUserInfo(trueUserId) {
             'Client-ID': 'pxa5la9qqsrqerq15fre01o89fmff0',
         }
     }).done(function (response) {
-        LoadHeaderTemplate(response.display_name, undefined, undefined);
+        LoadHeaderTemplate(response.display_name, response.logo, undefined, undefined);
         console.log(response); //debug
         }).fail(function () {
             console.log("getUserInfo failed");
@@ -133,7 +133,7 @@ function LoadLoadingTemplate() {
     $("#main").html(loadingTemplate());
 }
 
-function LoadHeaderTemplate(userName, totalPucks, points) {
+function LoadHeaderTemplate(userName, avatarUrl, totalPucks, points) {
     // if username, totalpucks, or points were given as undefined values, and
     // the header has been loaded already, just grab the value that was already
     // loaded previously. That way this function can be used to just update a
@@ -141,6 +141,10 @@ function LoadHeaderTemplate(userName, totalPucks, points) {
 
     if (userName === undefined && $("#userName").length) {
         userName = $("#userName").text();
+    }
+
+    if (avatarUrl === undefined && $("#avatarImg").length) {
+        avatarUrl = $("#avatarImg").prop('src');
     }
 
     if (totalPucks === undefined && $("#totalPucks").length) {
@@ -154,6 +158,7 @@ function LoadHeaderTemplate(userName, totalPucks, points) {
     var headerTemplate = Handlebars.templates.header;
     $("#header").html(headerTemplate({
         userName: userName,
+        avatarUrl: avatarUrl,
         totalPucks: totalPucks,
         playerScore: points
     }));

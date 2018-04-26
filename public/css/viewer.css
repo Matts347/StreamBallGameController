@@ -3,6 +3,28 @@ body {
     font: 12px arial, sans-serif;
     background-image: url("scratched_steel_texture_by_aarondesign.jpg");
 }
+
+#main {
+    clear: both;
+}
+
+#avatarContainer {
+    margin: 5px;
+    float: left;
+    height: 100%;
+}
+
+#userNameContainer {
+    line-height: normal;
+    float: left;
+}
+
+img#avatarImg {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
 .slidercontainer{
     width: 100%;
 }
@@ -54,8 +76,4 @@ body {
 .leftLauncher, .rightLauncher{
     width: 50%;
     margin-top: 10px;
-}
-
-h1 {
-    text-align: center;
 }
