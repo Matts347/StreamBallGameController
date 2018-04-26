@@ -19,6 +19,7 @@ function sendUserInfo() {
     }).done(function (response) {
         console.log(" -- SENT user info to backend -- "); // DEBUG
         console.log(response);
+        LoadHeaderTemplate(undefined, response.puckCount, response.points);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
         console.log(jqXHR);
