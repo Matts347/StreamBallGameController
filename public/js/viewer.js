@@ -1,42 +1,7 @@
-
-var leftPowerSlider = document.getElementById("leftPowerSlider");
-var rightPowerSlider = document.getElementById("rightPowerSlider");
-var leftPowerOutput = document.getElementById("leftPowerDisplay");
-var rightPowerOutput = document.getElementById("rightPowerDisplay");
-var sendButton = document.getElementById("sendButton");
-var title = document.getElementById("title");
-var leftPucks = document.getElementById("leftLauncher");
-var rightPucks = document.getElementById("rightLauncher");
 var twitchAuth;
 var userInfo;
 var newUser = true;
 var payload;
-//init variables
-leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
-rightPowerOutput.innerHTML = "Power: " + rightPowerSlider.value;
-leftPucks.value = 0;
-rightPucks.value = 0;
-
-$("#rightAngle").roundSlider({
-    radius: 80,
-    circleShape: "quarter-top-left",
-    showTooltip: true,
-    value: 45,
-    min: 0,
-    max: 90,
-    tooltipFormat: "changeTooltipRight"
-});
-$("#leftAngle").roundSlider({
-    radius: 80,
-    circleShape: "quarter-top-right",
-    showTooltip: true,
-    value: -45,
-    min: -90,
-    max: 0,
-    tooltipFormat: "changeTooltipRight"
-});
-var leftAngle = $("#leftAngle").data("roundSlider");
-var rightAngle = $("#rightAngle").data("roundSlider");
 
 //Right angles slider normally displays a negative value. This allows the correct value to be displayed
 function changeTooltipRight(e) {
@@ -47,12 +12,10 @@ function changeTooltipRight(e) {
 function sendUserInfo() {
     $.ajax({
         url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/wildUserAppears?channelId=' + twitchAuth.channelId + '&playerId=' + payload.user_id + '&opaqueUserId=' + payload.opaque_user_id,
-        contentType: 'application/json',
-        type: 'POST',
+        type: 'GET',
         headers: {
             'x-extension-jwt': twitchAuth.token
-        },
-        data: {}
+        }
     }).done(function (response) {
         console.log(" -- SENT user info to backend -- "); // DEBUG
         console.log(response);
@@ -74,24 +37,12 @@ function getUserInfo(trueUserId) {
             'Client-ID': 'pxa5la9qqsrqerq15fre01o89fmff0',
         }
     }).done(function (response) {
-        userInfo = response;
-        document.getElementById("userName").textContent = userInfo.display_name;
-        document.getElementById("playerScore").textContent = 0;
-        console.log(userInfo); //debug
+        LoadHeaderTemplate(response.display_name, undefined, undefined);
+        console.log(response); //debug
         }).fail(function () {
             console.log("getUserInfo failed");
     });
 }
-
-
-//Display for Power Slider
-leftPowerSlider.oninput = function () {
-    leftPowerOutput.innerHTML = "Power: " + this.value;
-};
-rightPowerSlider.oninput = function () {
-    rightPowerOutput.innerHTML = "Power: " + this.value;
-};
-
 
 function AllowNumbersOnly(e) {
     var charCode = e.which ? e.which : e.keyCode;
@@ -121,6 +72,7 @@ function sendPucks(json) {
     }).done(function (response) {
         //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
         //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
+        console.log("sendPucks succeeded");
     }).fail(function () {
         console.log("sendPucks failed");
     });
@@ -175,7 +127,85 @@ var Launcher = function (side, angle, power, pucks) {
     };
 };
 
-$(document).ready(function () {
+function LoadLoadingTemplate() {
+    var loadingTemplate = Handlebars.templates.loading;
+    $("#main").html(loadingTemplate());
+}
+
+function LoadHeaderTemplate(userName, totalPucks, points) {
+    // if username, totalpucks, or points were given as undefined values, and
+    // the header has been loaded already, just grab the value that was already
+    // loaded previously. That way this function can be used to just update a
+    // single value instead of having to provide all three at once.
+
+    if (userName === undefined && $("#userName").length) {
+        userName = $("#userName").text();
+    }
+
+    if (totalPucks === undefined && $("#totalPucks").length) {
+        totalPucks = $("#totalPucks").text();
+    }
+    
+    if (points === undefined && $("#playerScore").length) {
+        points = $("#playerScore").text();
+    }    
+
+    var headerTemplate = Handlebars.templates.header;
+    $("#header").html(headerTemplate({
+        userName: userName,
+        totalPucks: totalPucks,
+        playerScore: points
+    }));
+}
+
+function LoadLaunchTemplate() {
+    var launchTemplate = Handlebars.templates.launch;
+    $("#main").html(launchTemplate());
+
+    var leftPowerSlider = document.getElementById("leftPowerSlider");
+    var rightPowerSlider = document.getElementById("rightPowerSlider");
+    var leftPowerOutput = document.getElementById("leftPowerDisplay");
+    var rightPowerOutput = document.getElementById("rightPowerDisplay");
+    var sendButton = document.getElementById("sendButton");
+    var leftPucks = document.getElementById("leftLauncher");
+    var rightPucks = document.getElementById("rightLauncher");
+
+    //init variables
+    leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
+    rightPowerOutput.innerHTML = "Power: " + rightPowerSlider.value;
+    leftPucks.value = 0;
+    rightPucks.value = 0;
+
+    $("#rightAngle").roundSlider({
+        radius: 80,
+        circleShape: "quarter-top-left",
+        showTooltip: true,
+        value: 45,
+        min: 0,
+        max: 90,
+        tooltipFormat: "changeTooltipRight"
+    });
+    $("#leftAngle").roundSlider({
+        radius: 80,
+        circleShape: "quarter-top-right",
+        showTooltip: true,
+        value: -45,
+        min: -90,
+        max: 0,
+        tooltipFormat: "changeTooltipRight"
+    });
+    var leftAngle = $("#leftAngle").data("roundSlider");
+    var rightAngle = $("#rightAngle").data("roundSlider");
+
+    
+    //Display for Power Slider
+    leftPowerSlider.oninput = function () {
+        leftPowerOutput.innerHTML = "Power: " + this.value;
+    };
+    rightPowerSlider.oninput = function () {
+        rightPowerOutput.innerHTML = "Power: " + this.value;
+    };
+
     $("#sendButton").unbind('click');
     $("#sendButton").bind('click', function() {
         //set all values to numbers
@@ -195,6 +225,10 @@ $(document).ready(function () {
         }
         disableButton();
     });
+}
+
+$(document).ready(function () {
+    LoadLaunchTemplate();
 });
 //window.Twitch.ext.onContext(function (context, contextFields) {
 //    if (newUser === true && context.mode === "viewer") {
@@ -235,14 +269,18 @@ window.Twitch.ext.onAuthorized(function (auth) {
         //console.log(msg);
         if (type === "application/json") {
             var msgJSON = JSON.parse(msg);
+            var puckCount;
+            var points;
+
             if (msgJSON.puckCount !== undefined) {
-                var puckCount = msgJSON.puckCount;
-                document.getElementById("totalPucks").innerHTML = "Pucks: " + puckCount;
+                puckCount = msgJSON.puckCount;
             }
-            else if (msgJSON.points !== undefined) {
-                var points = msgJSON.points;
-                document.getElementById("playerScore").innerHTML = "Score: " + points;
+
+            if (msgJSON.points !== undefined) {
+                points = msgJSON.points;
             }
+
+            LoadHeaderTemplate(undefined, puckCount, points);
         }
     });
     // window.Twitch.ext.listen("broadcast", function (target, type, msg) {
