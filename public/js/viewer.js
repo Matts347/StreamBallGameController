@@ -295,7 +295,7 @@ window.Twitch.ext.onAuthorized(function (auth) {
                 points = msgJSON.points;
             }
 
-            LoadHeaderTemplate(undefined, puckCount, points);
+            LoadHeaderTemplate(undefined, undefined, puckCount, points);
         }
     });
     // window.Twitch.ext.listen("broadcast", function (target, type, msg) {
