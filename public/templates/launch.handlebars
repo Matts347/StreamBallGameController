@@ -1,3 +1,4 @@
+<!--
 <div class="slider">
     <input id="leftAngle" />
     <input id="rightAngle" />
@@ -11,8 +12,46 @@
     <p><span id="rightPowerDisplay"></span></p>
 </div>
 <div class="puckNumber">
+    <div id="launchTitle"><h3>Launch amount:</h3></div>
     <input type="text" id="leftLauncher" class="leftLauncher" onkeypress="return AllowNumbersOnly(event)">
     <input type="text" id="rightLauncher" class="rightLauncher" onkeypress="return AllowNumbersOnly(event)">
+</div>
+<div class="sendButton">
+    <button type="button" class="block" id="sendButton">Fire Pucks</button>
+</div>
+-->
+
+<div id="controlsContainer">
+    <div id="leftLauncherController">
+        <div class="slider">
+            <input id="leftAngle" />
+        </div>
+        <div class="powerContainer">
+            <input type="range" min="1" max="100" value="50" class="leftPowerSlider" id="leftPowerSlider">
+        </div>
+        <div class="powerDisplay">
+            <p><span id="leftPowerDisplay"></span></p>
+        </div>    
+        <div class="puckNumber">
+            <div id="launchTitle"><h3>How many?</h3></div>
+            <input type="text" id="leftLauncher" class="leftLauncher" onkeypress="return AllowNumbersOnly(event)">
+        </div>    
+    </div>
+    <div id="rightLauncherController">
+        <div class="slider">
+            <input id="rightAngle" />
+        </div>
+        <div class="powerContainer">
+            <input type="range" min="1" max="100" value="50" class="rightPowerSlider" id="rightPowerSlider">
+        </div>
+        <div class="powerDisplay">
+            <p><span id="rightPowerDisplay"></span></p>
+        </div>  
+        <div class="puckNumber">
+            <div id="launchTitle"><h3>How many?</h3></div>
+            <input type="text" id="rightLauncher" class="rightLauncher" onkeypress="return AllowNumbersOnly(event)">
+        </div>      
+    </div>
 </div>
 <div class="sendButton">
     <button type="button" class="block" id="sendButton">Fire Pucks</button>
