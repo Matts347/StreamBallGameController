@@ -96,7 +96,7 @@ function disableButton() {
         console.log('Button Disabled');
         //sendButton.textContent = 'Launching in ' + disabledSeconds;
         var disabledTimer = setInterval(function () {
-            sendButton.textContent = 'Launching in ' + disabledSeconds;
+            sendButton.textContent = 'Queuing Launch ' + disabledSeconds;
             disabledSeconds--;
             if (disabledSeconds <= 0) {
                 clearInterval(disabledTimer);
