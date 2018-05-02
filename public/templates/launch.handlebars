@@ -33,7 +33,7 @@
             <p><span id="leftPowerDisplay"></span></p>
         </div>    
         <div class="puckNumber">
-            <div id="launchTitle"><h3>How many?</h3></div>
+            <div id="launchTitle"><h3>How many?<br/>(50 Max)</h3></div>
             <input type="text" id="leftLauncher" class="leftLauncher" onkeypress="return AllowNumbersOnly(event)">
         </div>    
     </div>
@@ -48,11 +48,14 @@
             <p><span id="rightPowerDisplay"></span></p>
         </div>  
         <div class="puckNumber">
-            <div id="launchTitle"><h3>How many?</h3></div>
+            <div id="launchTitle"><h3>How many?<br/>(50 Max)</h3></div>
             <input type="text" id="rightLauncher" class="rightLauncher" onkeypress="return AllowNumbersOnly(event)">
         </div>      
     </div>
 </div>
 <div class="sendButton">
-    <button type="button" class="block" id="sendButton">Fire Pucks</button>
+    <button type="button" class="block" id="sendButton">Launch Ready</button>
+</div>
+<div class="errorMessage">
+    <p><span id="error"></span></p>
 </div>

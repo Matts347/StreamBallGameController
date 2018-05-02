@@ -10,6 +10,7 @@ var twitchAuth;
 var userInfo;
 var newUser = true;
 var payload;
+var currentPuckCount;
 
 //Right angles slider normally displays a negative value. This allows the correct value to be displayed
 function changeTooltipRight(e) {
@@ -27,6 +28,7 @@ function sendUserInfo() {
     }).done(function (response) {
         console.log(" -- SENT user info to backend -- "); // DEBUG
         console.log(response);
+        currentPuckCount = response.puckCount;
         LoadHeaderTemplate(undefined, undefined, response.puckCount, response.points);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log(" -- SENT user info to backend FAILED -- "); // DEBUG
@@ -61,13 +63,7 @@ function AllowNumbersOnly(e) {
     }
 }
 
-//function getUpdatedPuckCount(target, type, msg) {  
-//    if (type === "application/json") {
-//        var msgJSON = JSON.parse(msg);
-//        puckCount = msgJSON.puckCount;
-//        puckDisplay.innerHTML = "Pucks: " + puckCount;
-//    }
-//}
+
 
 //function to send JSON data to game
 function sendPucks(json) {
@@ -80,8 +76,6 @@ function sendPucks(json) {
         },
         data: json
     }).done(function (response) {
-        //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
-        //window.Twitch.ext.unlisten("whisper-" + twitchAuth.userId, getUpdatedPuckCount(target, type, msg));
         console.log("sendPucks succeeded");
     }).fail(function () {
         console.log("sendPucks failed");
@@ -94,7 +88,6 @@ function disableButton() {
     sendButton.disabled = true;
     if (sendButton.disabled === true) {
         console.log('Button Disabled');
-        //sendButton.textContent = 'Launching in ' + disabledSeconds;
         var disabledTimer = setInterval(function () {
             sendButton.textContent = 'Queuing Launch ' + disabledSeconds;
             disabledSeconds--;
@@ -106,10 +99,9 @@ function disableButton() {
     setTimeout(function () {
         sendButton.disabled = false;
         if (sendButton.disabled === false) {
-            sendButton.textContent = 'Fire Button';
+            sendButton.textContent = 'Launch Ready';
         }
     }, 6000);
-    //window.Twitch.ext.listen("whisper-" + twitchAuth.userId, getUpdatedPuckCount);
 }
 
 //Launcher object to be used in JSON for game
@@ -224,36 +216,50 @@ function LoadLaunchTemplate() {
     $("#sendButton").unbind('click');
     $("#sendButton").bind('click', function() {
         //set all values to numbers
-        var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
-        var right = new Launcher(1, rightAngle.option("value"), rightPowerSlider.value, rightPucks.value);
-        var launches = new Array();
-        if (left.pucks > 0) {
-            launches.push(left);
-        } 
-        if (right.pucks > 0) {
-            launches.push(right);
+        var totalPucksLaunched = parseInt(leftPucks.value) + parseInt(rightPucks.value);
+        try {
+            if (totalPucksLaunched > currentPuckCount) {
+                throw "Not enough pucks to complete launch. Please change total amount to less than " + currentPuckCount + " pucks.";
+            }
+            else if (leftPucks.value > 50 && rightPucks.value > 50) {
+                throw "Both Launchers values are greater than 50 pucks."
+            }
+            else if (leftPucks.value > 50) {
+                throw "Left Launcher value is greater than 50 pucks."
+            }
+            else if (rightPucks.value > 50) {
+                throw "Right Launcher value is greater than 50 pucks."
+            }
+            else {
+                var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
+                var right = new Launcher(1, rightAngle.option("value"), rightPowerSlider.value, rightPucks.value);
+                var launches = new Array();
+                if (left.pucks > 0) {
+                    launches.push(left);
+                }
+                if (right.pucks > 0) {
+                    launches.push(right);
+                }
+                if (launches.length > 0) {
+                    var launchJSON = JSON.stringify(launches);
+                    sendPucks(launchJSON);
+                    console.log("sending the following json string: " + launchJSON); //DEBUG
+                }
+                disableButton();
+            }
         }
-        if (launches.length > 0) {
-            var launchJSON = JSON.stringify(launches);
-            sendPucks(launchJSON);
-            console.log("sending the following json string: " + launchJSON); //DEBUG
+        catch (err) {
+            document.getElementById("error").innerHTML = err;
+            setTimeout(function () {
+                document.getElementById("error").innerHTML = "";
+            }, 6000);
         }
-        disableButton();
     });
 }
 
 $(document).ready(function () {
     LoadLaunchTemplate();
 });
-//window.Twitch.ext.onContext(function (context, contextFields) {
-//    if (newUser === true && context.mode === "viewer") {
-//        sendUserInfo();
-//        newUser = false;
-//    }
-//    console.log(context); //DEBUG
-//    console.log(contextFields); //DEBUG
-//    console.log(newUser); //DEBUG
-//});
 
 //get twitch auth values
 window.Twitch.ext.onAuthorized(function (auth) {
@@ -289,6 +295,7 @@ window.Twitch.ext.onAuthorized(function (auth) {
 
             if (msgJSON.puckCount !== undefined) {
                 puckCount = msgJSON.puckCount;
+                currentPuckCount = puckCount;
             }
 
             if (msgJSON.points !== undefined) {
