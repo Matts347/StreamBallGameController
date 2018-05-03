@@ -213,3 +213,6 @@ input[type=text] {
     width: 50%;
     margin-top: 10px;
 }
+.errorMessage {
+    color: red;
+}
