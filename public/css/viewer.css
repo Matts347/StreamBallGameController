@@ -110,13 +110,14 @@ img#avatarImg {
     cursor: pointer;
 }
 
+
 input[type=text] {
     width: 30px;
     padding: 10px;
     margin: 10px 0px 10px 0px;
     font-size: large;
     color: rgb(42, 237, 251);
-    background-color:  #02111b;
+    background-color: #02111b;
     border: 1px solid rgb(42, 237, 251);
     box-shadow: 0 0 10px rgba(42, 237, 251, 1);
 }

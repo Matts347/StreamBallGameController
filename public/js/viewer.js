@@ -10,6 +10,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 var Launch = function (side, angle, power, pucks) {
     var userInfo = TwitchUserManager.getUserInfo();
     var twitchAuth = TwitchUserManager.getAuth();
+    var logo = userInfo.logo;
+    var userId = userInfo._id;
+    var displayName = userInfo.display_name;
 
     // generate unique Id
     var idLength = 9;
@@ -219,6 +222,9 @@ var TemplateManager = (function(){
                     }
                     else if (rightPucks.value == 0 && leftPucks.value == 0) {
                         throw "Please enter pucks to launch. Both amounts are currently 0.";
+                    }
+                    else if (TwitchUserManager.getUserInfo() === undefined) {
+                        throw "Unable to obtain user info. To play, please allow this extension to know your User ID on Twitch by clicking the \"Grant Permissions\" button below.";
                     }
                     else {
                         var left = new Launch(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
