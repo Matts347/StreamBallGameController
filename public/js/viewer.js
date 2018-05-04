@@ -66,7 +66,7 @@ var TwitchUserManager = (function(){
             dataType: 'json',
             headers: {
                 'Accept': 'application/vnd.twitchtv.v5+json',
-                'Client-ID': 'pxa5la9qqsrqerq15fre01o89fmff0',
+                'Client-ID': 'y4jq5ejqgodi64cueqvjdip2ekfg0r', //pxa5la9qqsrqerq15fre01o89fmff0
             }
         }).done(function (response) {
             TemplateManager.LoadHeaderTemplate(response.display_name, response.logo, undefined, undefined);
