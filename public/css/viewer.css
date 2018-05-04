@@ -215,4 +215,5 @@ input[type=text] {
 }
 .errorMessage {
     color: red;
+    text-shadow: 0px 0px 6px rgba(255, 0, 0, 0.7);
 }
