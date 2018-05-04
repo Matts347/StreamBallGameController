@@ -99,7 +99,7 @@ function disableButton() {
     setTimeout(function () {
         sendButton.disabled = false;
         if (sendButton.disabled === false) {
-            sendButton.textContent = 'Launch Ready';
+            sendButton.textContent = 'Launch';
         }
     }, 6000);
 }
@@ -219,7 +219,7 @@ function LoadLaunchTemplate() {
         var totalPucksLaunched = parseInt(leftPucks.value) + parseInt(rightPucks.value);
         try {
             if (totalPucksLaunched > currentPuckCount) {
-                throw "Not enough pucks to complete launch. Please change total amount to less than " + currentPuckCount + " pucks.";
+                throw "Not enough pucks to complete launch. Please change total to be a total of at most " + currentPuckCount + " pucks.";
             }
             else if (leftPucks.value > 50 && rightPucks.value > 50) {
                 throw "Both Launchers values are greater than 50 pucks."
@@ -229,6 +229,9 @@ function LoadLaunchTemplate() {
             }
             else if (rightPucks.value > 50) {
                 throw "Right Launcher value is greater than 50 pucks."
+            }
+            else if (rightPucks.value == 0 && leftPucks.value == 0) {
+                throw "Please enter pucks to launch. Both amounts are currently 0."
             }
             else {
                 var left = new Launcher(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
@@ -245,14 +248,15 @@ function LoadLaunchTemplate() {
                     sendPucks(launchJSON);
                     console.log("sending the following json string: " + launchJSON); //DEBUG
                 }
+                document.getElementById("error").innerHTML = ""; //remove error
                 disableButton();
             }
         }
         catch (err) {
             document.getElementById("error").innerHTML = err;
-            setTimeout(function () {
-                document.getElementById("error").innerHTML = "";
-            }, 6000);
+            //setTimeout(function () {
+            //    document.getElementById("error").innerHTML = "";
+            //}, 6000);
         }
     });
 }
