@@ -1,52 +1,41 @@
-<!--
-<div class="slider">
-    <input id="leftAngle" />
-    <input id="rightAngle" />
-</div>
-<div class="powerContainer">
-    <input type="range" min="1" max="100" value="50" class="leftPowerSlider" id="leftPowerSlider">
-    <input type="range" min="1" max="100" value="50" class="rightPowerSlider" id="rightPowerSlider">
-</div>
-<div class="powerDisplay">
-    <p><span id="leftPowerDisplay"></span></p>
-    <p><span id="rightPowerDisplay"></span></p>
-</div>
-<div class="puckNumber">
-    <div id="launchTitle"><h3>Launch amount:</h3></div>
-    <input type="text" id="leftLauncher" class="leftLauncher" onkeypress="return AllowNumbersOnly(event)">
-    <input type="text" id="rightLauncher" class="rightLauncher" onkeypress="return AllowNumbersOnly(event)">
-</div>
-<div class="sendButton">
-    <button type="button" class="block" id="sendButton">Fire Pucks</button>
-</div>
--->
-
 <div id="controlsContainer">
     <div id="leftLauncherController">
-        <div class="slider">
-            <input id="leftAngle" />
+        <div id="launcherImgContainer">
+            <img src="img/launcher_left.png" id="leftAngleImg" alt="Left launcher">
         </div>
-        <div class="powerContainer">
-            <input type="range" min="1" max="100" value="50" class="leftPowerSlider" id="leftPowerSlider">
+        <div class="angleDisplay">
+            <p><span id="leftAngleDisplay">Angle:</span></p>
+        </div>  
+        <div class="angleContainer">
+            <input type="range" min="0" max="90" value="45" class="leftAngleSlider" id="leftAngleSlider">
         </div>
         <div class="powerDisplay">
             <p><span id="leftPowerDisplay"></span></p>
         </div>    
+        <div class="powerContainer">
+            <input type="range" min="0" max="90" value="45" class="leftPowerSlider" id="leftPowerSlider">
+        </div>
         <div class="puckNumber">
             <div id="launchTitle"><h3>How many?<br/>(50 Max)</h3></div>
             <input type="text" id="leftLauncher" class="leftLauncher" onkeypress="return AllowNumbersOnly(event)">
         </div>    
     </div>
     <div id="rightLauncherController">
-        <div class="slider">
-            <input id="rightAngle" />
+        <div id="launcherImgContainer">
+            <img src="img/launcher_right.png" id="rightAngleImg" alt="Right launcher">
         </div>
-        <div class="powerContainer">
-            <input type="range" min="1" max="100" value="50" class="rightPowerSlider" id="rightPowerSlider">
+        <div class="angleDisplay">
+            <p><span id="rightAngleDisplay">Angle:</span></p>
+        </div>  
+        <div class="angleContainer">
+            <input type="range" min="0" max="90" value="45" class="rightAngleSlider" id="rightAngleSlider">
         </div>
         <div class="powerDisplay">
             <p><span id="rightPowerDisplay"></span></p>
         </div>  
+        <div class="powerContainer">
+            <input type="range" min="1" max="100" value="50" class="rightPowerSlider" id="rightPowerSlider">
+        </div>
         <div class="puckNumber">
             <div id="launchTitle"><h3>How many?<br/>(50 Max)</h3></div>
             <input type="text" id="rightLauncher" class="rightLauncher" onkeypress="return AllowNumbersOnly(event)">

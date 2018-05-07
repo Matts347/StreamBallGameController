@@ -37,7 +37,7 @@ var Launch = function (side, angle, power, pucks) {
     };
 };
 
-// TriviaTwitchUserManager manages Twitch auth and pubsub
+// TwitchUserManager manages Twitch auth and pubsub
 var TwitchUserManager = (function(){
     // private members
     var twitchAuth;
@@ -132,6 +132,8 @@ var TwitchUserManager = (function(){
 
 // TemplateManager manages view templates
 var TemplateManager = (function(){
+
+
     //disable launch button after click for a few seconds
     var disableSendButton = function(sendButton) {
         var disabledSeconds = 5;
@@ -153,6 +155,43 @@ var TemplateManager = (function(){
         }, 6000);
     };
 
+    var initLauncherAngleCntl = function(side) {
+        var imgId;
+        var sliderId;
+        var displayId;
+        var directionMultiplier;
+        if (side === 0) {
+            imgId = "#leftAngleImg";
+            sliderId = "leftAngleSlider";
+            displayId = "#leftAngleDisplay";
+            directionMultiplier = -1;
+        }
+        else {
+            imgId = "#rightAngleImg";
+            sliderId = "rightAngleSlider";
+            displayId = "#rightAngleDisplay";            
+            directionMultiplier = 1;
+        }
+
+        var sliderChangeHandler = function() {
+            var newVal = $("#" + sliderId).val();
+            var value = newVal * directionMultiplier;
+            $(imgId).css("transform", "rotate(" + value + "deg)");
+            $(imgId).css("-ms-transform", "rotate(" + value + "deg)");
+            $(imgId).css("-webkit-transform", "rotate(" + value + "deg)");
+
+            $(displayId).html("Angle: " + newVal);
+        };
+
+        // $(sliderId).bind("input", sliderChangeHandler);
+        // $(sliderId).bind("change", sliderChangeHandler);
+        var sliderElement = document.getElementById(sliderId);
+        sliderElement.addEventListener("input", sliderChangeHandler);
+        sliderElement.addEventListener("change", sliderChangeHandler);
+
+        sliderChangeHandler();
+    }
+
     return {
         LoadLaunchTemplate: function() {
             var launchTemplate = Handlebars.templates.launch;
@@ -165,6 +204,8 @@ var TemplateManager = (function(){
             var sendButton = document.getElementById("sendButton");
             var leftPucks = document.getElementById("leftLauncher");
             var rightPucks = document.getElementById("rightLauncher");
+            var leftAngleSlider = document.getElementById("leftAngleSlider");
+            var rightAngleSlider = document.getElementById("rightAngleSlider");
         
             //init variables
             leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
@@ -172,27 +213,8 @@ var TemplateManager = (function(){
             leftPucks.value = 0;
             rightPucks.value = 0;
         
-            $("#rightAngle").roundSlider({
-                radius: 80,
-                circleShape: "quarter-top-left",
-                showTooltip: true,
-                value: 45,
-                min: 0,
-                max: 90,
-                tooltipFormat: "changeTooltipRight"
-            });
-            $("#leftAngle").roundSlider({
-                radius: 80,
-                circleShape: "quarter-top-right",
-                showTooltip: true,
-                value: -45,
-                min: -90,
-                max: 0,
-                tooltipFormat: "changeTooltipRight"
-            });
-            var leftAngle = $("#leftAngle").data("roundSlider");
-            var rightAngle = $("#rightAngle").data("roundSlider");
-        
+            initLauncherAngleCntl(0);
+            initLauncherAngleCntl(1);
             
             //Display for Power Slider
             leftPowerSlider.oninput = function () {
@@ -227,8 +249,8 @@ var TemplateManager = (function(){
                         throw "Unable to obtain user info. To play, please allow this extension to know your User ID on Twitch by clicking the \"Grant Permissions\" button below.";
                     }
                     else {
-                        var left = new Launch(0, Math.abs(leftAngle.option("value")), leftPowerSlider.value, leftPucks.value);
-                        var right = new Launch(1, rightAngle.option("value"), rightPowerSlider.value, rightPucks.value);
+                        var left = new Launch(0, leftAngleSlider.value, leftPowerSlider.value, leftPucks.value);
+                        var right = new Launch(1, rightAngleSlider.value, rightPowerSlider.value, rightPucks.value);
                         var launches = new Array();
                         if (left.pucks > 0) {
                             launches.push(left);
