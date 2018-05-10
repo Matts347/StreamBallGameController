@@ -155,6 +155,13 @@ var TemplateManager = (function(){
         }, 6000);
     };
 
+    var allowNumbersOnly = function(e) {
+        var charCode = e.which ? e.which : e.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            e.preventDefault();
+        }
+    }
+
     var initLauncherAngleCntl = function(side) {
         var imgId;
         var sliderId;
@@ -183,8 +190,6 @@ var TemplateManager = (function(){
             $(displayId).html("Angle: " + newVal);
         };
 
-        // $(sliderId).bind("input", sliderChangeHandler);
-        // $(sliderId).bind("change", sliderChangeHandler);
         var sliderElement = document.getElementById(sliderId);
         sliderElement.addEventListener("input", sliderChangeHandler);
         sliderElement.addEventListener("change", sliderChangeHandler);
@@ -216,6 +221,10 @@ var TemplateManager = (function(){
             initLauncherAngleCntl(0);
             initLauncherAngleCntl(1);
             
+            // Only allow numbers to be put into the puck input boxes
+            leftPucks.onkeypress = allowNumbersOnly;
+            rightPucks.onkeypress = allowNumbersOnly;
+
             //Display for Power Slider
             leftPowerSlider.oninput = function () {
                 leftPowerOutput.innerHTML = "Power: " + this.value;
@@ -328,19 +337,6 @@ var EBSManager = (function(){
         }
     };
 })();
-
-//Right angles slider normally displays a negative value. This allows the correct value to be displayed
-function changeTooltipRight(e) {
-    var val = e.value;
-    return Math.abs(val) + '\xB0';
-}
-
-function AllowNumbersOnly(e) {
-    var charCode = e.which ? e.which : e.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-        e.preventDefault();
-    }
-}
 
 $(document).ready(function () {
     TemplateManager.LoadLaunchTemplate();
