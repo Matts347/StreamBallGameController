@@ -10,7 +10,6 @@ h1 {
 
 #header {
     padding: 5px;
-    /*background-color: rgba(8, 45, 48, 0.7);*/
     border: 1px solid rgb(42, 237, 251);
     border-radius: 15px;
     box-shadow: 0 0 10px rgba(42, 237, 251, 0.8);
