@@ -50,7 +50,8 @@ h1 {
 #leftLauncherController, #rightLauncherController {
     padding: 5px;
     border: 1px solid rgb(42, 237, 251);
-    box-shadow: 0 0 10px rgba(42, 237, 251, 0.8);    
+    box-shadow: 0 0 10px rgba(42, 237, 251, 0.8);
+    width: 125px;
 }
 
 #avatarContainer {
