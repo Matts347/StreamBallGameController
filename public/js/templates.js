@@ -1,5 +1,13 @@
 (function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['authorize'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<h1>Success</h1>\r\n<p>Please copy the access token below and paste into Stream Pucks. This will allow you to play the game with viewers on your channel.</p>\r\nAccess token (treat like a password, do not show this to anyone): \r\n<input id=\"tokenField\" type=\"password\" value=\""
+    + container.escapeExpression(container.lambda((depth0 != null ? depth0.token : depth0), depth0))
+    + "\" />\r\n<button id=\"showTokenButton\">Show Token</button>\r\n<button id=\"copyTokenButton\">Copy to Clipboard</button>";
+},"useData":true});
+templates['authorize_fail'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<h1>Log in failed</h1>";
+},"useData":true});
 templates['header'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var alias1=container.lambda, alias2=container.escapeExpression;
 
