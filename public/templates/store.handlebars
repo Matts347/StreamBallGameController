@@ -1,0 +1,16 @@
+<div id="storeContainer">
+    <div class="items">
+        {{#each items}}
+        <div class="item" id="{{ id }}">
+            <div id="trailImgContainer">
+                <img id="trailImg" src="../img/{{ id }}.png" />
+            </div>
+            <div id="trailDescriptionContainer">
+                <h2>{{ name }}</h2>
+                <p>{{ description }}</p>
+                <p>Cost: {{ cost }} points</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>

@@ -1,10 +1,3 @@
-/*
-License for roundSlider
-Copyright (c) 2015-2018, Soundar
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
-*/
 
 //Launcher object to be used in JSON for game
 var Launch = function (side, angle, power, pucks) {
@@ -33,7 +26,8 @@ var Launch = function (side, angle, power, pucks) {
         "power": power,
         "pucks": pucks,
         "timestamp": Date.now(),
-        "displayName": userInfo.display_name
+        "displayName": userInfo.display_name,
+        "currentTrail": EBSManager.getCurrentTrail
     };
 };
 
@@ -74,6 +68,8 @@ var TwitchUserManager = (function(){
         });
     }
 
+
+
     return {
         // public members
         getPuckCount: function() {
@@ -85,6 +81,9 @@ var TwitchUserManager = (function(){
         },
         getUserInfo: function() {
             return userInfo;
+        },
+        getPayload: function () {
+            return payload;
         },
         getAuth: function(){
             return twitchAuth;
@@ -122,8 +121,15 @@ var TwitchUserManager = (function(){
                     if (msgJSON.points !== undefined) {
                         points = msgJSON.points;
                     }
-        
-                    TemplateManager.LoadHeaderTemplate(undefined, undefined, puckCount, points);
+                    if (points && puckCount !== undefined) {
+                        TemplateManager.LoadHeaderTemplate(undefined, undefined, puckCount, points);
+                    }
+                    else if (points === undefined) {
+                        TemplateManager.LoadHeaderTemplate(undefined, undefined, puckCount, undefined);
+                    }
+                    else if (puckCount === undefined) {
+                        TemplateManager.LoadHeaderTemplate(undefined, undefined, undefined, points);
+                    }
                 }
             });
         }
@@ -310,11 +316,68 @@ var TemplateManager = (function(){
                 playerScore: points
             }));
         },
+        LoadTabTemplate: function () {
+            var tabsTemplate = Handlebars.templates.tabs;
+            $("#tabs").html(tabsTemplate());
+            $("#launchTab").click(function () {
+                TemplateManager.LoadLaunchTemplate();
+                $('.active').removeClass("active");
+                $(this).addClass("active");
+            });
+            $("#storeTab").click(function () {
+                TemplateManager.LoadStoreTemplate(EBSManager.getStoreItems());
+                $('.active').removeClass("active");
+                $(this).addClass("active");
+            });
+            $("#aboutTab").click(function () {
+                TemplateManager.LoadAboutTemplate();
+                $('.active').removeClass("active");
+                $(this).toggleClass("active");
+            });
+        },
+        LoadStoreTemplate: function (itemsJSON) {
+            console.log(itemsJSON);
+            var storeTemplate = Handlebars.templates.store;
+            $("#main").html(storeTemplate(itemsJSON));
+            $(".item").click(function () {
+                var className = $(this).attr('id');
+                console.log(className);
+                var element = document.getElementsByClassName(className);
+                //element.style["pointer-events"] = "none";
+                EBSManager.storePurchasePointsUpdate(className);
+            });
+        },
+        LoadAboutTemplate: function () {
+            var aboutTemplate = Handlebars.templates.about;
+            $("#main").html(aboutTemplate());
+        }
     };
 })();
 
 // EBSManager manages access to the Stream Pucks backend service.
-var EBSManager = (function(){
+var EBSManager = (function () {
+    var storeItems;
+    var currentTrail;
+    //returns all the items for the store from the Database
+    $.ajax({
+        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/populateStoreItems?channelId=' + TwitchUserManager.getAuth.channelId + '&playerId=' + TwitchUserManager.getPayload.user_id,
+        type: 'GET',
+        dataType: 'json',
+        //headers: {
+        //    'x-extension-jwt': twitchAuth.token
+        //}
+    }).done(function (response) {
+        console.log(response);  //debug
+        storeItems = { items: [] };
+        for (var id in response) {
+            storeItems.items.push({
+                id: id,
+                name: response[id].name,
+                description: response[id].description,
+                cost: response[id].cost
+            });
+        }
+    });
     return {
         sendLaunches: function(launches) {
             var twitchAuth = TwitchUserManager.getAuth();
@@ -323,8 +386,14 @@ var EBSManager = (function(){
                 return;
             }
 
+            var payload = TwitchUserManager.getPayload();
+
+            if (payload === undefined) {
+                return;
+            }
+
             $.ajax({
-                url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId=' + twitchAuth.channelId + '&playerId=' + twitchAuth.userId,
+                url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/queueLaunch?channelId=' + twitchAuth.channelId + '&playerId=' + payload.userId,
                 contentType: 'application/json',
                 type: 'POST',
                 headers: {
@@ -334,12 +403,48 @@ var EBSManager = (function(){
             }).done(function (response) {
                 // noop
             });
+        },
+
+        storePurchasePointsUpdate: function (storeItemId) {
+            var twitchAuth = TwitchUserManager.getAuth();
+
+            if (twitchAuth === undefined) {
+                return;
+            }
+            var payload = TwitchUserManager.getPayload();
+
+            if (payload === undefined) {
+                return;
+            }
+            $("body").css("cursor", "progress");
+            $.ajax({
+                url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/purchasePointsUpdate?channelId=' + twitchAuth.channelId + '&playerId=' + payload.user_id + '&storeItemId=' + storeItemId,
+                type: 'POST',
+            }).done(function (response) {
+                if (response === 200) {
+                    storeItemName = currentTrail;
+                }
+            });
+            $("body").css("cursor", "default");
+        },
+
+        getStoreItems: function () {
+            return storeItems;
+        },
+
+        getCurrentTrail: function () {
+            if (currentTrail === null) {
+                currentTrail = 'default';
+            }
+            return currentTrail;
         }
     };
 })();
 
 $(document).ready(function () {
-    TemplateManager.LoadLaunchTemplate();
+    //TemplateManager.LoadLaunchTemplate();
+    TemplateManager.LoadTabTemplate();
+    this.getElementById("launchTab").click(); //initialize launch tab as default view
 });
 
 //get twitch auth values
