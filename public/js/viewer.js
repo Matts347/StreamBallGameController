@@ -107,29 +107,26 @@ var TwitchUserManager = (function(){
                 window.Twitch.ext.actions.requestIdShare();
             }
             
-            window.Twitch.ext.listen("whisper-" + twitchAuth.userId, function (target, type, msg) {
+            window.Twitch.ext.listen("broadcast", function (target, type, msg) {
                 if (type === "application/json") {
                     var msgJSON = JSON.parse(msg);
+                    if (msgJSON.hasOwnProperty(twitchAuth.userId) === false) {
+                        return; // this broadcast didn't have any updates for this user
+                    }
+
                     var puckCount;
                     var points;
         
-                    if (msgJSON.puckCount !== undefined) {
-                        puckCount = msgJSON.puckCount;
+                    if (msgJSON[twitchAuth.userId].puckCount !== undefined) {
+                        puckCount = msgJSON[twitchAuth.userId].puckCount;
                         TwitchUserManager.setPuckCount(puckCount);
                     }
         
-                    if (msgJSON.points !== undefined) {
-                        points = msgJSON.points;
+                    if (msgJSON[twitchAuth.userId].points !== undefined) {
+                        points = msgJSON[twitchAuth.userId].points;
                     }
-                    if (points && puckCount !== undefined) {
-                        TemplateManager.LoadHeaderTemplate(undefined, undefined, puckCount, points);
-                    }
-                    else if (points === undefined) {
-                        TemplateManager.LoadHeaderTemplate(undefined, undefined, puckCount, undefined);
-                    }
-                    else if (puckCount === undefined) {
-                        TemplateManager.LoadHeaderTemplate(undefined, undefined, undefined, points);
-                    }
+
+                    TemplateManager.LoadHeaderTemplate(undefined, undefined, puckCount, points);
                 }
             });
         }
