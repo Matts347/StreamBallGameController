@@ -27,7 +27,7 @@ var Launch = function (side, angle, power, pucks) {
         "pucks": pucks,
         "timestamp": Date.now(),
         "displayName": userInfo.display_name,
-        "currentTrail": EBSManager.getCurrentTrail
+        "trail": EBSManager.getCurrentTrail()
     };
 };
 
@@ -110,25 +110,25 @@ var TwitchUserManager = (function(){
             window.Twitch.ext.listen("broadcast", function (target, type, msg) {
                 if (type === "application/json") {
                     var msgJSON = JSON.parse(msg);
-                    if (msgJSON.hasOwnProperty(twitchAuth.userId) === false) {
+                    if (msgJSON.hasOwnProperty(payload.user_id) === false) {
                         return; // this broadcast didn't have any updates for this user
                     }
-
                     var puckCount;
                     var points;
         
-                    if (msgJSON[twitchAuth.userId].puckCount !== undefined) {
-                        puckCount = msgJSON[twitchAuth.userId].puckCount;
+                    if (msgJSON[payload.user_id].puckCount !== undefined) {
+                        puckCount = msgJSON[payload.user_id].puckCount;
                         TwitchUserManager.setPuckCount(puckCount);
                     }
         
-                    if (msgJSON[twitchAuth.userId].points !== undefined) {
-                        points = msgJSON[twitchAuth.userId].points;
+                    if (msgJSON[payload.user_id].points !== undefined) {
+                        points = msgJSON[payload.user_id].points;
                     }
 
                     TemplateManager.LoadHeaderTemplate(undefined, undefined, puckCount, points);
                 }
             });
+            EBSManager.initStoreItems(twitchAuth, payload);
         }
     };
 })();
@@ -322,7 +322,7 @@ var TemplateManager = (function(){
                 $(this).addClass("active");
             });
             $("#storeTab").click(function () {
-                TemplateManager.LoadStoreTemplate(EBSManager.getStoreItems());
+                TemplateManager.LoadStoreTemplate(EBSManager.getStoreItems(), EBSManager.getPurchasedItems());
                 $('.active').removeClass("active");
                 $(this).addClass("active");
             });
@@ -332,16 +332,46 @@ var TemplateManager = (function(){
                 $(this).toggleClass("active");
             });
         },
-        LoadStoreTemplate: function (itemsJSON) {
-            console.log(itemsJSON);
+        LoadStoreTemplate: function (storeItems, purchasedItems) {
             var storeTemplate = Handlebars.templates.store;
-            $("#main").html(storeTemplate(itemsJSON));
-            $(".item").click(function () {
-                var className = $(this).attr('id');
-                console.log(className);
-                var element = document.getElementsByClassName(className);
-                //element.style["pointer-events"] = "none";
-                EBSManager.storePurchasePointsUpdate(className);
+            $("#main").html(storeTemplate(storeItems));
+            for (var i = 0; i < purchasedItems.items.length; i++) {
+                for (var j = 0; j < storeItems.items.length; j++) {
+                    if (purchasedItems.items[i].id === storeItems.items[j].id) {
+                        $("#" + purchasedItems.items[i].id).html("Apply");
+                        $("#" + purchasedItems.items[i].id).prop("disabled", false);
+                        $("#" + purchasedItems.items[i].id).attr("name", "inactivated");
+                    }
+                }
+            }
+            $(".purchaseButton").click(function () {
+                var buttonType = $(this).html();
+                var itemId = $(this).attr('id');
+                //var activeItem = document.getElementsByName("active");
+                var activeItem = $("[name='activated']");
+                if (buttonType === "Purchase") {
+                    $(this).html("Confirm?");
+                }
+                else if (buttonType === "Confirm?") {
+                    EBSManager.storePurchasePointsUpdate(itemId, this);
+                }
+                else if (buttonType === "Apply") {
+                    $(this).html("Active");
+                    $(this).prop("disabled", true);
+                    //change other buttons that are purchased to apply instead of active
+                    for (var i = 0; i < activeItem.length; i++) {
+                        activeItem[i].disabled = false;
+                        activeItem[i].innerHTML = "Apply";
+                        activeItem[i].name = "inactivated";
+                        activeItem[i].className = "purchaseButton";
+                    }
+                    $(this).attr("class", "activatedButton")
+                    $(this).attr("name", "activated");
+                    EBSManager.setCurrentTrail(itemId);
+                }
+                //var element = document.getElementsByClassName(className);
+                ////element.style["pointer-events"] = "none";
+                //EBSManager.storePurchasePointsUpdate(className);
             });
         },
         LoadAboutTemplate: function () {
@@ -355,27 +385,39 @@ var TemplateManager = (function(){
 var EBSManager = (function () {
     var storeItems;
     var currentTrail;
-    //returns all the items for the store from the Database
-    $.ajax({
-        url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/populateStoreItems?channelId=' + TwitchUserManager.getAuth.channelId + '&playerId=' + TwitchUserManager.getPayload.user_id,
-        type: 'GET',
-        dataType: 'json',
-        //headers: {
-        //    'x-extension-jwt': twitchAuth.token
-        //}
-    }).done(function (response) {
-        console.log(response);  //debug
-        storeItems = { items: [] };
-        for (var id in response) {
-            storeItems.items.push({
-                id: id,
-                name: response[id].name,
-                description: response[id].description,
-                cost: response[id].cost
-            });
-        }
-    });
+    var purchased;
+
     return {
+        initStoreItems: function (auth, payload) {
+            $.ajax({
+                url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/populateStoreItems?channelId=' + auth.channelId + '&playerId=' + payload.user_id,
+                type: 'GET',
+                dataType: 'json',
+                //headers: {
+                //    'x-extension-jwt': twitchAuth.token
+                //}
+            }).done(function (response) {
+                var allItems = response.store;
+                var purchasedItems = response.itemsPurchased;
+                storeItems = { items: [] };
+                purchased = { items: [] };
+                for (var i in purchasedItems) {
+                    purchased.items.push({
+                        id: i,
+                        name: purchasedItems[i]
+                    });
+                }
+                for (var j in allItems) {
+                    storeItems.items.push({
+                        id: j,
+                        name: allItems[j].name,
+                        description: allItems[j].description,
+                        cost: allItems[j].cost
+                    });
+                }
+            });
+        },
+
         sendLaunches: function(launches) {
             var twitchAuth = TwitchUserManager.getAuth();
 
@@ -402,7 +444,7 @@ var EBSManager = (function () {
             });
         },
 
-        storePurchasePointsUpdate: function (storeItemId) {
+        storePurchasePointsUpdate: function (storeItemId, buttonPressed) {
             var twitchAuth = TwitchUserManager.getAuth();
 
             if (twitchAuth === undefined) {
@@ -417,9 +459,28 @@ var EBSManager = (function () {
             $.ajax({
                 url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/purchasePointsUpdate?channelId=' + twitchAuth.channelId + '&playerId=' + payload.user_id + '&storeItemId=' + storeItemId,
                 type: 'POST',
-            }).done(function (response) {
-                if (response === 200) {
-                    storeItemName = currentTrail;
+                success: function (result) {
+                    var activeItem = $("[name='activated']");
+                    var itemId = $(buttonPressed).attr('id');
+                    $(buttonPressed).html("Active");
+                    $(buttonPressed).prop("disabled", true);
+                    //change other buttons that are purchased to apply instead of active
+                    for (var i = 0; i < activeItem.length; i++) {
+                        activeItem[i].disabled = false;
+                        activeItem[i].innerHTML = "Apply";
+                        activeItem[i].name = "inactivated";
+                        activeItem[i].className = "purchaseButton";
+                    }
+                    $(buttonPressed).attr("class", "activatedButton")
+                    $(buttonPressed).attr("name", "activated");
+                    EBSManager.setCurrentTrail(itemId);
+                },
+                error: function (request, status, error) {
+                    document.getElementById("error").innerHTML = request.responseText;
+                    $(buttonPressed).html("Apply");
+                    $(buttonPressed).prop("disabled", false);
+                    $(buttonPressed).attr("name", "inactivated");
+
                 }
             });
             $("body").css("cursor", "default");
@@ -429,11 +490,19 @@ var EBSManager = (function () {
             return storeItems;
         },
 
+        getPurchasedItems: function () {
+            return purchased;
+        },
+
         getCurrentTrail: function () {
             if (currentTrail === null) {
                 currentTrail = 'default';
             }
             return currentTrail;
+        },
+
+        setCurrentTrail: function (trailId) {
+            currentTrail = trailId;
         }
     };
 })();
@@ -441,7 +510,7 @@ var EBSManager = (function () {
 $(document).ready(function () {
     //TemplateManager.LoadLaunchTemplate();
     TemplateManager.LoadTabTemplate();
-    this.getElementById("launchTab").click(); //initialize launch tab as default view
+    this.getElementById("launchTab").click();//initialize launch tab as default view
 });
 
 //get twitch auth values

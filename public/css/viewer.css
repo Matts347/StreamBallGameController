@@ -229,13 +229,13 @@ input[type=text] {
     height: 100px;
     line-height: normal;
 }
-.item:hover {
+/*.item:hover {
     cursor: pointer;
-}
+}*/
 #items {
     display: flex;
     align-content: flex-start;
-    overflow: scroll;
+    overflow-y: auto;
 }
 ::-webkit-scrollbar-track {
     background: #021130;
@@ -243,4 +243,43 @@ input[type=text] {
 
 ::-webkit-scrollbar-thumb {
     color: rgb(42, 237, 251);
+}
+#trailImgContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.purchaseButton {
+    align-content: flex-end;
+    height: 24px;
+    width: 76px;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: center;
+    background-color: #02111b;
+    color: rgb(42, 237, 251);
+    text-shadow: 0px 0px 6px rgba(42, 237, 251, 0.7);
+    border: 2px solid rgb(42, 237, 251);
+    box-shadow: 0 0 10px rgba(42, 237, 251, 1);
+}
+
+.purchaseButton:hover {
+    background-color: rgb(42, 237, 251);
+    color: #02111b;
+    text-shadow: 0px 0px 10px rgb(14, 65, 68, 0.8), 0 0 1px rgb(14, 65, 68, 1);
+    box-shadow: 0 0 10px rgba(42, 237, 251, 1);
+}
+
+.activatedButton {
+    align-content: flex-end;
+    height: 24px;
+    width: 76px;
+    font-size: 15px;
+    text-align: center;
+    border: 2px solid rgb(42, 237, 251);
+    background-color: rgb(42, 237, 251);
+    color: #02111b;
+    text-shadow: 0px 0px 10px rgb(14, 65, 68, 0.8), 0 0 1px rgb(14, 65, 68, 1);
+    box-shadow: 0 0 10px rgba(42, 237, 251, 1);
 }
