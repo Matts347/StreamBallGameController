@@ -12,12 +12,12 @@
                 <h2>{{ name }}</h2>
                 <p>{{ description }}</p>
                 <p>Cost: {{ cost }} points</p>
+                <div id="errorMessage">
+                    <p><span id="error {{ id }}"></span></p>
+                </div>
             </div>
 
         </div>
         {{/each}}
-    </div>
-    <div class="errorMessage">
-        <p><span id="error"></span></p>
     </div>
 </div>

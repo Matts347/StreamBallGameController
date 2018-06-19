@@ -38,13 +38,15 @@ templates['store'] = template({"1":function(container,depth0,helpers,partials,da
     + alias2(alias1((depth0 != null ? depth0.description : depth0), depth0))
     + "</p>\r\n                <p>Cost: "
     + alias2(alias1((depth0 != null ? depth0.cost : depth0), depth0))
-    + " points</p>\r\n            </div>\r\n\r\n        </div>\r\n";
+    + " points</p>\r\n                <div id=\"errorMessage\">\r\n                    <p><span id=\"error "
+    + alias2(alias1((depth0 != null ? depth0.id : depth0), depth0))
+    + "\"></span></p>\r\n                </div>\r\n            </div>\r\n\r\n        </div>\r\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1;
 
   return "<div id=\"storeContainer\">\r\n    <div class=\"items\">\r\n"
     + ((stack1 = helpers.each.call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.items : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "    </div>\r\n    <div class=\"errorMessage\">\r\n        <p><span id=\"error\"></span></p>\r\n    </div>\r\n</div>\r\n";
+    + "    </div>\r\n</div>\r\n";
 },"useData":true});
 templates['tabs'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     return "<div id=\"tabsContainer\">\r\n	<div class=\"active\" id=\"launchTab\">Launch</div>\r\n	<div id=\"storeTab\">Store</div>\r\n	<div id=\"aboutTab\">About</div>\r\n</div>";

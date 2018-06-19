@@ -214,7 +214,7 @@ input[type=text] {
     margin-top: 10px;
 }
 
-.errorMessage {
+#errorMessage {
     color: red;
     text-shadow: 0px 0px 6px rgba(255, 0, 0, 0.7);
 }
@@ -232,17 +232,19 @@ input[type=text] {
 /*.item:hover {
     cursor: pointer;
 }*/
-#items {
-    display: flex;
-    align-content: flex-start;
-    overflow-y: auto;
+.items {
+    /*display: flex;
+    align-content: flex-start;*/
+    height: 347px;
+    overflow-y: scroll;
 }
-::-webkit-scrollbar-track {
-    background: #021130;
+.items::-webkit-scrollbar {
+    width: auto;
 }
 
-::-webkit-scrollbar-thumb {
-    color: rgb(42, 237, 251);
+.items::-webkit-scrollbar-thumb {
+    background-color: rgba(42, 237, 251, 1);
+    outline: 1px rgb(42, 237, 251);
 }
 #trailImgContainer {
     display: flex;
@@ -252,8 +254,8 @@ input[type=text] {
 
 .purchaseButton {
     align-content: flex-end;
-    height: 24px;
-    width: 76px;
+    height: 23px;
+    width: 79px;
     font-size: 15px;
     cursor: pointer;
     text-align: center;
@@ -273,8 +275,8 @@ input[type=text] {
 
 .activatedButton {
     align-content: flex-end;
-    height: 24px;
-    width: 76px;
+    height: 23px;
+    width: 79px;
     font-size: 15px;
     text-align: center;
     border: 2px solid rgb(42, 237, 251);

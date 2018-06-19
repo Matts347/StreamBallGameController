@@ -337,10 +337,19 @@ var TemplateManager = (function(){
             $("#main").html(storeTemplate(storeItems));
             for (var i = 0; i < purchasedItems.items.length; i++) {
                 for (var j = 0; j < storeItems.items.length; j++) {
-                    if (purchasedItems.items[i].id === storeItems.items[j].id) {
+
+                    //Loads the active button from a previous selection
+                    if (purchasedItems.items[i].id === storeItems.items[j].id && purchasedItems.items[i].active) {
+                        $("#" + purchasedItems.items[i].id).html("Active");
+                        $("#" + purchasedItems.items[i].id).prop("disabled", true);
+                        $("#" + purchasedItems.items[i].id).attr("name", "activated");
+                        $("#" + purchasedItems.items[i].id).attr("class", "activatedButton");
+                    }
+                    else if (purchasedItems.items[i].id === storeItems.items[j].id) {
                         $("#" + purchasedItems.items[i].id).html("Apply");
                         $("#" + purchasedItems.items[i].id).prop("disabled", false);
                         $("#" + purchasedItems.items[i].id).attr("name", "inactivated");
+                        $("#" + purchasedItems.items[i].id).attr("class", "purchaseButton");
                     }
                 }
             }
@@ -368,6 +377,7 @@ var TemplateManager = (function(){
                     $(this).attr("class", "activatedButton")
                     $(this).attr("name", "activated");
                     EBSManager.setCurrentTrail(itemId);
+                    EBSManager.setActivePurchasedItem($(this).attr("id"));
                 }
                 //var element = document.getElementsByClassName(className);
                 ////element.style["pointer-events"] = "none";
@@ -404,7 +414,8 @@ var EBSManager = (function () {
                 for (var i in purchasedItems) {
                     purchased.items.push({
                         id: i,
-                        name: purchasedItems[i]
+                        name: purchasedItems[i],
+                        active: false
                     });
                 }
                 for (var j in allItems) {
@@ -474,14 +485,22 @@ var EBSManager = (function () {
                     $(buttonPressed).attr("class", "activatedButton")
                     $(buttonPressed).attr("name", "activated");
                     EBSManager.setCurrentTrail(itemId);
+                    EBSManager.addPurchasedItem(storeItemId);
                 },
                 error: function (request, status, error) {
-                    document.getElementById("error").innerHTML = request.responseText;
-                    $(buttonPressed).html("Apply");
-                    $(buttonPressed).prop("disabled", false);
-                    $(buttonPressed).attr("name", "inactivated");
-
+                    var itemId = $(buttonPressed).attr('id');
+                    document.getElementById("error " + itemId).innerHTML = "Error: " + request.responseText;
+                    if (request.status == 410) {
+                        $(buttonPressed).html("Apply");
+                        $(buttonPressed).prop("disabled", false);
+                        $(buttonPressed).attr("name", "inactivated");
+                        EBSManager.addPurchasedItem(storeItemId);
+                    }
+                    else {
+                        $(buttonPressed).html("Purchase");
+                    }
                 }
+
             });
             $("body").css("cursor", "default");
         },
@@ -501,6 +520,23 @@ var EBSManager = (function () {
             return currentTrail;
         },
 
+        addPurchasedItem: function (newItem) {
+            purchased.items.push({
+                id: newItem,
+                name: newItem,
+                active: true
+            });
+        },
+        setActivePurchasedItem: function (item) {
+            for (var i in purchased.items) {
+                if (purchased.items[i].id === item) {
+                    purchased.items[i].active = true;
+                }
+                else {
+                    purchased.items[i].active = false;
+                }
+            }
+        },
         setCurrentTrail: function (trailId) {
             currentTrail = trailId;
         }
