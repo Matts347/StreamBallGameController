@@ -527,9 +527,10 @@ var EBSManager = (function () {
                 active: true
             });
         },
-        setActivePurchasedItem: function (item) {
+        setActivePurchasedItem: function (itemId) {
             for (var i in purchased.items) {
-                if (purchased.items[i].id === item) {
+                if (purchased.items[i].id === itemId) {
+
                     purchased.items[i].active = true;
                 }
                 else {
