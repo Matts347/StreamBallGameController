@@ -358,7 +358,7 @@ var TemplateManager = (function(){
                 var itemId = $(this).attr('id');
                 //var activeItem = document.getElementsByName("active");
                 var activeItem = $("[name='activated']");
-                if (buttonType === "Purchase") {
+                if (buttonType === "Use Points") {
                     $(this).html("Confirm?");
                 }
                 else if (buttonType === "Confirm?") {
@@ -497,7 +497,7 @@ var EBSManager = (function () {
                         EBSManager.addPurchasedItem(storeItemId);
                     }
                     else {
-                        $(buttonPressed).html("Purchase");
+                        $(buttonPressed).html("Use Points");
                     }
                 }
 
