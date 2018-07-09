@@ -1,7 +1,7 @@
 (function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
 templates['about'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    return "<div id=\"aboutContainer\">\r\n	<p>ABOUT</p>\r\n</div>";
+    return "<div id=\"aboutContainer\">\r\n	<p>Stream Pucks is a pinball-like game that streamers and viewers play together.</p>\r\n	<p>This extension is how you interact with the game. If the game is currently being streamed, you can click on the Launch tab to set up a launch. You should see a left and right launcher with controls. Set the angle, power, and how many pucks you want to launch for each launcher. Click Launch to queue your launch in the game being streamed. After a few seconds you should see your launch appear in the game's launch queue.</p>\r\n	<p>Have any feedback? Have an issue? <a href=\"https://discord.gg/rsRVFGs\">Join our discord</a> and let us know!</p>\r\n	<p>Are you a streamer and want to play Stream Pucks on your channel? The game itself can be downloaded at <a href=\"https://streamgenie.tv/\">https://streamgenie.tv/</a>. It will give you instructions for how to connect your twitch channel and install this extension.</p>\r\n	<p>Created by <a href=\"https://streamgenie.tv/\">Stream Genie</a>.</p>\r\n</div>";
 },"useData":true});
 templates['authorize'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     return "<!-- intentionally left blank -->";
