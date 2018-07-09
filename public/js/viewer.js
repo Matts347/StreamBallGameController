@@ -325,8 +325,10 @@ var TemplateManager = (function(){
                 $(this).addClass("active");
             });
             $("#storeTab").click(function () {
-                EBSManager.setCurrentLauncherValues($("#leftAngleSlider").val(), $("#rightAngleSlider").val(),
-                    $("#leftPowerSlider").val(), $("#rightPowerSlider").val(), $("#leftLauncher").val(), $("#rightLauncher").val());
+                if ($("#launchTab").hasClass("active")) {
+                    EBSManager.setCurrentLauncherValues($("#leftAngleSlider").val(), $("#rightAngleSlider").val(),
+                        $("#leftPowerSlider").val(), $("#rightPowerSlider").val(), $("#leftLauncher").val(), $("#rightLauncher").val());
+                } //if the launch tab is active, it will save the launcher values, otherwise it won't worry about it
                 TemplateManager.LoadStoreTemplate(EBSManager.getStoreItems(), EBSManager.getPurchasedItems());
                 $('.active').removeClass("active");
                 $(this).addClass("active");
