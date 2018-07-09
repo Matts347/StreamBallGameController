@@ -136,7 +136,6 @@ var TwitchUserManager = (function(){
 // TemplateManager manages view templates
 var TemplateManager = (function(){
 
-
     //disable launch button after click for a few seconds
     var disableSendButton = function(sendButton) {
         var disabledSeconds = 5;
@@ -214,12 +213,16 @@ var TemplateManager = (function(){
             var rightPucks = document.getElementById("rightLauncher");
             var leftAngleSlider = document.getElementById("leftAngleSlider");
             var rightAngleSlider = document.getElementById("rightAngleSlider");
+            var launcherValues = EBSManager.getCurrentLauncherValues();
         
-            //init variables
+            leftPowerSlider.value = launcherValues.left[0].power;
+            rightPowerSlider.value = launcherValues.right[0].power;
+            leftAngleSlider.value = launcherValues.left[0].angle;
+            rightAngleSlider.value = launcherValues.right[0].angle;
+            leftPucks.value = launcherValues.left[0].puckAmount;
+            rightPucks.value = launcherValues.right[0].puckAmount;
             leftPowerOutput.innerHTML = "Power: " + leftPowerSlider.value;
             rightPowerOutput.innerHTML = "Power: " + rightPowerSlider.value;
-            leftPucks.value = 0;
-            rightPucks.value = 0;
         
             initLauncherAngleCntl(0);
             initLauncherAngleCntl(1);
@@ -322,11 +325,17 @@ var TemplateManager = (function(){
                 $(this).addClass("active");
             });
             $("#storeTab").click(function () {
+                EBSManager.setCurrentLauncherValues($("#leftAngleSlider").val(), $("#rightAngleSlider").val(),
+                    $("#leftPowerSlider").val(), $("#rightPowerSlider").val(), $("#leftLauncher").val(), $("#rightLauncher").val());
                 TemplateManager.LoadStoreTemplate(EBSManager.getStoreItems(), EBSManager.getPurchasedItems());
                 $('.active').removeClass("active");
                 $(this).addClass("active");
             });
             $("#aboutTab").click(function () {
+                if ($("#launchTab").hasClass("active")) {
+                    EBSManager.setCurrentLauncherValues($("#leftAngleSlider").val(), $("#rightAngleSlider").val(),
+                        $("#leftPowerSlider").val(), $("#rightPowerSlider").val(), $("#leftLauncher").val(), $("#rightLauncher").val());
+                } //if the launch tab is active, it will save the launcher values, otherwise it won't worry about it
                 TemplateManager.LoadAboutTemplate();
                 $('.active').removeClass("active");
                 $(this).toggleClass("active");
@@ -396,6 +405,7 @@ var EBSManager = (function () {
     var storeItems;
     var currentTrail;
     var purchased;
+    var currentLauncherValues;
 
     return {
         initStoreItems: function (auth, payload) {
@@ -403,9 +413,6 @@ var EBSManager = (function () {
                 url: 'https://us-central1-twitchplaysballgame.cloudfunctions.net/populateStoreItems?channelId=' + auth.channelId + '&playerId=' + payload.user_id,
                 type: 'GET',
                 dataType: 'json',
-                //headers: {
-                //    'x-extension-jwt': twitchAuth.token
-                //}
             }).done(function (response) {
                 var allItems = response.store;
                 var purchasedItems = response.itemsPurchased;
@@ -427,6 +434,21 @@ var EBSManager = (function () {
                     });
                 }
             });
+        },
+
+        initLauncherValues: function () {
+            currentLauncherValues = {
+                left: [{
+                    angle: 45,
+                    power: 50,
+                    puckAmount: 0
+                }],
+                right: [{
+                    angle: 45,
+                    power: 50,
+                    puckAmount: 0
+                }]
+            };
         },
 
         sendLaunches: function(launches) {
@@ -513,6 +535,10 @@ var EBSManager = (function () {
             return purchased;
         },
 
+        getCurrentLauncherValues: function () {
+            return currentLauncherValues;
+        },
+
         getCurrentTrail: function () {
             if (currentTrail === null) {
                 currentTrail = 'default';
@@ -527,6 +553,7 @@ var EBSManager = (function () {
                 active: true
             });
         },
+
         setActivePurchasedItem: function (itemId) {
             for (var i in purchased.items) {
                 if (purchased.items[i].id === itemId) {
@@ -538,6 +565,22 @@ var EBSManager = (function () {
                 }
             }
         },
+
+        setCurrentLauncherValues: function (leftAngle, rightAngle, leftPower, rightPower, leftPucks, rightPucks) {
+            currentLauncherValues = {
+                left: [{
+                    angle: leftAngle,
+                    power: leftPower,
+                    puckAmount: leftPucks
+                }],
+                right: [{
+                    angle: rightAngle,
+                    power: rightPower,
+                    puckAmount: rightPucks
+                }]
+            };
+        },
+
         setCurrentTrail: function (trailId) {
             currentTrail = trailId;
         }
@@ -545,7 +588,7 @@ var EBSManager = (function () {
 })();
 
 $(document).ready(function () {
-    //TemplateManager.LoadLaunchTemplate();
+    EBSManager.initLauncherValues();
     TemplateManager.LoadTabTemplate();
     this.getElementById("launchTab").click();//initialize launch tab as default view
 });
