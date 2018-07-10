@@ -510,6 +510,9 @@ var EBSManager = (function () {
                     $(buttonPressed).attr("name", "activated");
                     EBSManager.setCurrentTrail(itemId);
                     EBSManager.addPurchasedItem(storeItemId);
+                    if (result !== undefined && result !== "") {
+                        TemplateManager.LoadHeaderTemplate(undefined, undefined, undefined, result);
+                    }
                 },
                 error: function (request, status, error) {
                     var itemId = $(buttonPressed).attr('id');
