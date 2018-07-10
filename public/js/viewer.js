@@ -350,7 +350,7 @@ var TemplateManager = (function(){
                 for (var j = 0; j < storeItems.items.length; j++) {
 
                     //Loads the active button from a previous selection
-                    if (purchasedItems.items[i].id === storeItems.items[j].id && purchasedItems.items[i].active) {
+                    if (purchasedItems.items[i].id === storeItems.items[j].id && purchasedItems.items[i].active === true) {
                         $("#" + purchasedItems.items[i].id).html("Active");
                         $("#" + purchasedItems.items[i].id).prop("disabled", true);
                         $("#" + purchasedItems.items[i].id).attr("name", "activated");
@@ -557,12 +557,12 @@ var EBSManager = (function () {
                 name: newItem,
                 active: true
             });
+            this.setActivePurchasedItem(newItem);
         },
 
         setActivePurchasedItem: function (itemId) {
             for (var i in purchased.items) {
                 if (purchased.items[i].id === itemId) {
-
                     purchased.items[i].active = true;
                 }
                 else {
